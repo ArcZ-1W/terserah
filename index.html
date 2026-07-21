@@ -1647,7 +1647,7 @@
         // ============================================
         const supabaseUrl = 'https://ttocjfcslxqmwbvwiyto.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR0b2NqZmNzbHhxbXdidndpeXRvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ0NjYxODksImV4cCI6MjEwMDA0MjE4OX0.9sa4V5OxVmYJw4b7RPA7QygbgegVy9cutQFVzGZSkr8';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        const sb = supabase.createClient(supabaseUrl, supabaseKey);
 
         // ============================================
         // STATE
@@ -1770,7 +1770,7 @@
         // ============================================
         async function loadProducts() {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await sb
                     .from('products')
                     .select('*')
                     .order('id');
@@ -1839,7 +1839,7 @@
             }
 
             try {
-                const { data, error } = await supabase
+                const { data, error } = await sb
                     .from('orders')
                     .select('*')
                     .eq('user_id', currentUser.id)
@@ -1947,7 +1947,7 @@
             if (!confirm('Yakin ingin membatalkan pesanan ini?')) return;
 
             try {
-                const { error } = await supabase
+                const { error } = await sb
                     .from('orders')
                     .update({ status: 'cancelled' })
                     .eq('id', orderId);
@@ -1966,7 +1966,7 @@
             if (!confirm('Tandai pesanan ini sebagai selesai?')) return;
 
             try {
-                const { error } = await supabase
+                const { error } = await sb
                     .from('orders')
                     .update({ status: 'completed' })
                     .eq('id', orderId);
@@ -2017,7 +2017,7 @@
             const review = ratingComment.value.trim().slice(0, 100);
 
             try {
-                const { error } = await supabase
+                const { error } = await sb
                     .from('orders')
                     .update({ 
                         rating: selectedRating,
@@ -2170,7 +2170,7 @@
             const orderNumber = 'ORD-' + String(Date.now()).slice(-6);
 
             try {
-                const { data, error } = await supabase
+                const { data, error } = await sb
                     .from('orders')
                     .insert({
                         user_id: currentUser.id,
@@ -2236,7 +2236,7 @@
 
         async function handleLogin(username, password) {
             try {
-                const { data, error } = await supabase
+                const { data, error } = await sb
                     .from('users')
                     .select('*')
                     .eq('username', username)
@@ -2279,7 +2279,7 @@
         async function handleRegister(data) {
             try {
                 // Check if username exists
-                const { data: existing, error: checkError } = await supabase
+                const { data: existing, error: checkError } = await sb
                     .from('users')
                     .select('username')
                     .eq('username', data.username)
@@ -2291,7 +2291,7 @@
                     return false;
                 }
 
-                const { error } = await supabase
+                const { error } = await sb
                     .from('users')
                     .insert({
                         username: data.username,
@@ -2613,4 +2613,4 @@
         init();
     </script>
 </body>
-  </html>
+    </html>
