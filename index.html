@@ -96,6 +96,19 @@ code{font:600 .9em 'JetBrains Mono',monospace;background:var(--blue2);padding:1p
 .hint .chip{font-family:Figtree,sans-serif;font-size:14px;text-align:left}
 .aif{display:flex;gap:8px;padding:10px 12px;border-top:1.5px solid var(--line)}
 .aif textarea{flex:1;resize:none;font:400 16px/1.4 Figtree,sans-serif;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg);color:var(--ink)}
+[hidden]{display:none!important}
+.peek{position:relative;height:250px;overflow:hidden;border-radius:14px;margin-top:14px}
+.pk{padding:2px 4px;user-select:none;-webkit-user-select:none;pointer-events:none}
+.bl1,.bl2{position:absolute;left:0;right:0;pointer-events:none}
+.bl1{top:0;height:55%;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+.bl2{top:45%;bottom:0;-webkit-backdrop-filter:blur(9px);backdrop-filter:blur(9px);background:linear-gradient(to bottom,transparent,var(--card) 90%);-webkit-mask-image:linear-gradient(to bottom,transparent,#000 25%);mask-image:linear-gradient(to bottom,transparent,#000 25%)}
+.start{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:12px 26px;font-size:17px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.lnk{background:none;border:0;color:var(--mute);text-decoration:underline;padding:8px 0;font-size:14px}
+.ov{position:fixed;inset:0;background:rgba(10,18,32,.6);display:grid;place-items:center;z-index:20;padding:16px}
+.dlg{background:var(--card);border-radius:16px;padding:20px;max-width:380px;width:100%}
+.dlg h3{font-size:22px;margin-bottom:6px}
+.dlg input{width:100%;font:inherit;padding:10px;border:1.5px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);margin:8px 0 14px}
+.inquiz .tools{display:none}.inquiz .brand{pointer-events:none}.inquiz .fab{display:none!important}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -299,7 +312,22 @@ q:[{q:'Mengapa memakai tugas.pop(nomor - 1)?',o:['Indeks list dimulai dari 0','A
 {q:'Kapan "if not tugas" bernilai benar?',o:['Saat list kosong','Saat list berisi tugas','Selalu'],a:0,e:'List kosong dianggap False, jadi not membuatnya True.'},
 {q:'Mengapa tampilkan() dibuat sebagai fungsi?',o:['Agar kode bisa dipakai di beberapa tempat','Agar program lebih lambat','Wajib oleh Python'],a:0,e:'Fungsi dipanggil di menu Lihat dan Hapus tanpa menulis ulang.'}]}
 ];
-const PASS=2, KEY='pylangkah-progress-v1';
+const EXTRA=[
+[{q:'Baris mana yang akan menimbulkan error?',o:['print("Halo")',"print('Halo')",'print(Halo)'],a:2,e:'Tanpa tanda kutip, Halo dianggap nama variabel yang belum dibuat.'},{q:'Dua perintah print() berurutan menampilkan hasil dalam...',o:['Satu baris','Dua baris','Tidak ada baris'],a:1,e:'Setiap print() menampilkan hasilnya di baris baru.'}],
+[{q:'Tipe data dari True adalah...',o:['str','int','bool'],a:2,e:'True dan False bertipe bool.'},{q:'Setelah x = 5 lalu x = 8, berapa nilai x?',o:['5','8','13'],a:1,e:'Nilai terbaru menggantikan nilai lama.'}],
+[{q:'Hasil dari 7 // 2 adalah...',o:['3.5','3','4'],a:1,e:'// membagi lalu membulatkan ke bawah.'},{q:'Hasil dari 5 != 5 adalah...',o:['True','False','Error'],a:1,e:'5 sama dengan 5, jadi "tidak sama" bernilai False.'}],
+[{q:'Jika nilai = 60 pada kode materi ini, outputnya...',o:['A','B','Perlu belajar lagi'],a:2,e:'60 tidak memenuhi dua kondisi pertama, jadi else berjalan.'},{q:'Kata kunci untuk kondisi tambahan setelah if adalah...',o:['elseif','elif','else if'],a:1,e:'Python menyingkatnya menjadi elif.'}],
+[{q:'Angka terakhir yang tampil dari for i in range(3): print(i) adalah...',o:['2','3','0'],a:0,e:'range(3) menghasilkan 0, 1, 2.'},{q:'Kode while n > 0 dengan n mulai dari 3 dan dikurangi 1 tiap putaran menampilkan...',o:['3, 2, 1','1, 2, 3','3, 2, 1, 0'],a:0,e:'Berhenti saat n menjadi 0 karena 0 > 0 salah.'}],
+[{q:'Pada def sapa(nama), nama disebut...',o:['Parameter','Modul','Komentar'],a:0,e:'Data masukan fungsi disebut parameter.'},{q:'Mana pemanggilan fungsi yang benar?',o:['sapa("Ani")','def sapa("Ani")','return sapa'],a:0,e:'Panggil fungsi dengan nama dan tanda kurung berisi argumen.'}],
+[{q:'Isi buah[-1] pada ["apel", "jeruk", "mangga"] adalah...',o:['apel','mangga','Error'],a:1,e:'Indeks -1 mengambil item terakhir.'},{q:'Pada ["apel", "jeruk"], item yang terhapus oleh pop(0) adalah...',o:['apel','jeruk','Keduanya'],a:0,e:'pop(0) menghapus item di indeks 0.'}],
+[{q:'Cara mengambil nilai dengan aman saat kunci mungkin tidak ada?',o:['siswa.get("alamat")','siswa["alamat"]','siswa(alamat)'],a:0,e:'get() tidak error jika kunci tidak ada.'},{q:'Pada {"nama": "Sari", "umur": 17}, "umur" adalah...',o:['Kunci','Nilai','Tipe'],a:0,e:'Bagian sebelum titik dua adalah kunci.'}],
+[{q:'int(input()) dengan jawaban 8 menghasilkan...',o:['Teks 8','Bilangan 8','Error'],a:1,e:'int() mengubah teks "8" menjadi bilangan 8.'},{q:'Huruf apa yang mengawali f-string?',o:['s','f','p'],a:1,e:'String berawalan f membolehkan {variabel} di dalamnya.'}],
+[{q:'int("abc") menimbulkan error bertipe...',o:['ValueError','NameError','SyntaxError'],a:0,e:'Teks yang bukan angka tidak bisa diubah, itu ValueError.'},{q:'Setelah import random, cara memanggil angka acak 1 sampai 10?',o:['random.randint(1, 10)','randint(1, 10)','random(1, 10)'],a:0,e:'Fungsi dipanggil lewat nama modul: random.randint().'}],
+[{q:'Mengapa angka rahasia dibuat sebelum while?',o:['Agar dipilih sekali dan tidak berubah tiap tebakan','Agar loop lebih cepat','Wajib oleh Python'],a:0,e:'Jika dibuat di dalam loop, angkanya berganti tiap putaran.'},{q:'Jika tebakan lebih besar dari rahasia, program menampilkan...',o:['Terlalu kecil','Terlalu besar','Benar!'],a:1,e:'Tebakan yang lebih besar dari rahasia berarti terlalu besar.'}],
+[{q:'enumerate(tugas, 1) dipakai untuk...',o:['Memberi nomor urut mulai dari 1','Mengurutkan abjad','Menghapus duplikat'],a:0,e:'enumerate memberi nomor pada tiap item.'},{q:'tugas.append(...) pada menu 2 berguna untuk...',o:['Menambah tugas ke akhir list','Menghapus tugas','Menampilkan tugas'],a:0,e:'append menambah item di akhir list.'}]
+];
+L.forEach((l,i)=>l.q.push(...EXTRA[i]));
+const PASS=4, KEY='pylangkah-progress-v1';
 let done=[];
 try{done=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){done=[]}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(done))}catch(e){}};
@@ -311,44 +339,87 @@ function toast(m){const t=document.createElement('div');t.className='toast';t.se
 function home(){
  const pct=Math.round(done.length/L.length*100);
  const next=L.findIndex((_,i)=>!done.includes(i));
- app.innerHTML=`<section class="hero"><h1>Belajar Python, satu langkah dalam satu waktu.</h1>
- <p>${L.length} materi untuk pemula, dari <code>print()</code> sampai dua proyek pertamamu. Setiap materi punya kuis. Lulus kuis (minimal ${PASS} dari 3 benar) untuk membuka materi berikutnya.</p>
+ app.innerHTML=`<section class="hero">${cheatMsg?'<div class="res fail" role="alert" style="margin:0 0 18px">Kuis dibatalkan karena kamu meninggalkan halaman saat kuis berlangsung. Semua progres direset dari awal.</div>':''}<h1>Belajar Python, satu langkah dalam satu waktu.</h1>
+ <p>${L.length} materi untuk pemula, dari <code>print()</code> sampai dua proyek pertamamu. Setiap materi punya kuis. Lulus kuis (minimal ${PASS} dari 5 benar) untuk membuka materi berikutnya.</p>
  ${next===-1?'<a class="btn pri" href="#/">Kursus selesai, kerja bagus!</a>':`<a class="btn pri" href="#/l/${next}">${done.length?'Lanjutkan belajar':'Mulai dari materi 1'}</a>`}
  <div class="meter" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><b style="width:${pct}%"></b></div>
- <div class="small">${done.length} dari ${L.length} materi selesai</div></section>
+ <div class="small">${done.length} dari ${L.length} materi selesai</div><button class="lnk" id="rb">Rollback progres</button></section>
  <ol class="trail">${L.map((l,i)=>{const d=done.includes(i),o=unlocked(i);const cls=d?'st-done':o?'st-open':'st-lock';
  return `<li class="${cls}"><div class="dot">${d?'✓':o?i+1:'🔒'}</div><a class="node" href="#/l/${i}" data-i="${i}"><span class="tag">${d?'Selesai':o?'Terbuka':'Terkunci'}</span><h3>${l.t}</h3><span>${o?l.d:'Selesaikan materi '+i+' untuk membuka'}</span></a></li>`}).join('')}</ol>`;
+ $('#rb').onclick=rollback;
  app.querySelectorAll('.st-lock a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();toast('Materi ini terkunci. Lulus kuis materi sebelumnya dulu.')}));
 }
 
 function lesson(i){
- const l=L[i];let ans={};
- app.innerHTML=`<article class="lesson"><div class="crumb"><a href="#/">Peta materi</a> / Materi ${i+1} dari ${L.length}</div>
- <h1>${l.t}</h1><div class="small">${l.d}</div>${l.c}
- <section class="quiz"><h2>Kuis: buktikan kamu paham</h2><p class="small">Jawab semua soal. Minimal ${PASS} dari ${l.q.length} benar untuk lulus.</p>
- <div id="qs">${l.q.map((q,qi)=>`<div class="q" data-q="${qi}"><p>${qi+1}. ${q.q}</p>${q.o.map((o,oi)=>`<label class="opt"><input type="radio" name="q${qi}" value="${oi}"><span>${o}</span></label>`).join('')}<div class="exp" hidden>${q.e}</div></div>`).join('')}</div>
- <div class="actions"><button class="btn pri" id="chk">Periksa jawaban</button></div><div id="res"></div></section>
- <div class="actions"><a class="btn" href="${i?'#/l/'+(i-1):'#/'}">${i?'Materi sebelumnya':'Kembali ke peta'}</a></div></article>`;
+ const l=L[i];cheatMsg=false;
+ app.innerHTML=`<article class="lesson"><div class="crumb" id="crumb"><a href="#/">Peta materi</a> / Materi ${i+1} dari ${L.length}</div>
+ <div id="mat"><h1>${l.t}</h1><div class="small">${l.d}</div>${l.c}</div>
+ <section class="quiz" id="qz"></section>
+ <div class="actions" id="nav"><a class="btn" href="${i?'#/l/'+(i-1):'#/'}">${i?'Materi sebelumnya':'Kembali ke peta'}</a></div></article>`;
  app.querySelectorAll('pre').forEach(p=>{if(p.querySelector('span'))return;
-  p.innerHTML=p.innerHTML.replace(/(#[^\n]*)|("[^"\n]*"|'[^'\n]*')|\b(def|if|elif|else|for|while|in|return|import|try|except|print|input|int|len|range|True|False|break|continue|not|enumerate)\b/g,(m,c,s,k)=>c?`<span class="c">${m}</span>`:s?`<span class="s">${m}</span>`:`<span class="k">${m}</span>`)});
+  p.innerHTML=p.innerHTML.replace(/(#[^\n]*)|("[^"\n]*"|'[^'\n]*')|\b(def|if|elif|else|for|while|in|return|import|try|except|print|input|int|len|range|True|False|break|continue|not|enumerate)\b/g,(m,c,s)=>c?`<span class="c">${m}</span>`:s?`<span class="s">${m}</span>`:`<span class="k">${m}</span>`)});
  app.querySelectorAll('pre').forEach(p=>{const w=document.createElement('div');w.className='pw';p.replaceWith(w);w.append(p);
   const b=document.createElement('button');b.className='try';b.textContent='Coba di Lab';b.onclick=()=>{cells.push(p.textContent);saveCells();location.hash='#/lab'};w.append(b)});
+ const pk=l.q.slice(0,2).map((q,qi)=>`<div class="q"><p>${qi+1}. ${q.q}</p>${q.o.map(o=>`<div class="opt"><span>${o}</span></div>`).join('')}</div>`).join('');
+ $('#qz').innerHTML=`<h2>Kuis: buktikan kamu paham</h2><p class="small">${l.q.length} soal, minimal ${PASS} benar untuk lulus. Begitu kuis dimulai, materi disembunyikan sampai semua soal selesai. Jangan pindah tab, aplikasi, atau halaman. Kalau itu terjadi, semua progres direset dari awal.</p>
+ <div class="peek"><div class="pk" aria-hidden="true">${pk}</div><div class="bl1"></div><div class="bl2"></div><button class="btn pri start" id="start">Mulai kuis</button></div>`;
+ $('#start').onclick=()=>startQuiz(i);
+ window.scrollTo(0,0);
+}
+function startQuiz(i){
+ const l=L[i],cr=$('#crumb').innerHTML;
+ quizActive=true;setLive(true);document.body.classList.add('inquiz');$('#aip').hidden=true;
+ $('#mat').hidden=true;$('#nav').hidden=true;$('#crumb').textContent='Materi '+(i+1)+' dari '+L.length;
+ const qz=$('#qz');
+ qz.innerHTML=`<div class="res fail" role="alert" style="margin:0 0 16px">Kuis sedang berlangsung. Tetap di halaman ini sampai semua soal selesai.</div><h2>${l.t}</h2><div id="qs">${l.q.map((q,qi)=>`<div class="q" data-q="${qi}"><p>${qi+1}. ${q.q}</p>${q.o.map((o,oi)=>`<label class="opt"><input type="radio" name="q${qi}" value="${oi}"><span>${o}</span></label>`).join('')}<div class="exp" hidden>${q.e}</div></div>`).join('')}</div><div class="actions"><button class="btn pri" id="chk">Periksa jawaban</button></div><div id="res"></div>`;
  window.scrollTo(0,0);
  $('#chk').onclick=()=>{
-  let sc=0,miss=false;
-  l.q.forEach((q,qi)=>{const sel=app.querySelector(`input[name=q${qi}]:checked`);if(!sel){miss=true;return}});
-  if(miss){toast('Jawab semua soal dulu ya.');return}
-  l.q.forEach((q,qi)=>{const box=app.querySelector(`[data-q="${qi}"]`);const v=+app.querySelector(`input[name=q${qi}]:checked`).value;
-   box.querySelectorAll('.opt').forEach((lb,oi)=>{lb.classList.remove('ok','bad');if(oi===q.a)lb.classList.add('ok');else if(oi===v)lb.classList.add('bad')});
-   box.querySelector('.exp').hidden=false;if(v===q.a)sc++});
-  const ok=sc>=PASS;const r=$('#res');
-  if(ok){if(!done.includes(i)){done.push(i);save()}
-   const last=i===L.length-1;
-   r.innerHTML=`<div class="res pass">Lulus! Skor ${sc}/${l.q.length}. ${last?'Kamu menamatkan semua materi.':'Materi '+(i+2)+' sekarang terbuka.'}</div><div class="actions"><a class="btn pri" href="${last?'#/':'#/l/'+(i+1)}">${last?'Kembali ke peta':'Lanjut ke materi '+(i+2)}</a></div>`}
-  else r.innerHTML=`<div class="res fail">Skor ${sc}/${l.q.length}. Belum lulus. Baca materi di atas lagi, lalu coba kembali.</div><div class="actions"><button id="retry">Coba lagi</button></div>`;
+  if(l.q.some((q,qi)=>!qz.querySelector(`input[name=q${qi}]:checked`))){toast('Jawab semua soal dulu ya.');return}
+  const picks=l.q.map((q,qi)=>+qz.querySelector(`input[name=q${qi}]:checked`).value);
+  const sc=picks.filter((v,qi)=>v===l.q[qi].a).length,ok=sc>=PASS;
+  quizActive=false;setLive(null);document.body.classList.remove('inquiz');
+  l.q.forEach((q,qi)=>{const box=qz.querySelector(`[data-q="${qi}"]`),v=picks[qi];
+   box.querySelectorAll('.opt').forEach((lb,oi)=>{if(ok&&oi===q.a)lb.classList.add('ok');else if(oi===v)lb.classList.add(v===q.a?'ok':'bad')});
+   if(ok)box.querySelector('.exp').hidden=false});
+  qz.querySelectorAll('input').forEach(x=>x.disabled=true);$('#chk').hidden=true;
+  $('#mat').hidden=false;$('#nav').hidden=false;$('#crumb').innerHTML=cr;
+  if(ok&&!done.includes(i)){done.push(i);save()}
+  const last=i===L.length-1,r=$('#res');
+  r.innerHTML=ok?`<div class="res pass">Lulus! Skor ${sc}/${l.q.length}. ${last?'Kamu menamatkan semua materi.':'Materi '+(i+2)+' sekarang terbuka.'}</div><div class="actions"><a class="btn pri" href="${last?'#/':'#/l/'+(i+1)}">${last?'Kembali ke peta':'Lanjut ke materi '+(i+2)}</a></div>`
+   :`<div class="res fail">Skor ${sc}/${l.q.length}. Belum lulus. Baca materi di atas lagi, lalu coba kembali. Jawaban yang benar baru ditampilkan setelah kamu lulus.</div><div class="actions"><button id="retry">Coba lagi</button></div>`;
   const rt=$('#retry');if(rt)rt.onclick=()=>lesson(i);
   r.scrollIntoView({behavior:'smooth',block:'center'});
  };
+}
+const RB_PW='X',BK='pylangkah-backup-v1',LV='pylangkah-live-v1';
+let quizActive=false,cheatMsg=false;
+function setLive(v){try{v?localStorage.setItem(LV,'1'):localStorage.removeItem(LV)}catch(e){}}
+function readBk(){try{return JSON.parse(localStorage.getItem(BK)||'[]')}catch(e){return[]}}
+function cheat(){
+ quizActive=false;setLive(null);document.body.classList.remove('inquiz');
+ if(done.length){try{localStorage.setItem(BK,JSON.stringify([...new Set([...readBk(),...done])]))}catch(e){}}
+ done=[];save();cheatMsg=true;
+ if(location.hash!=='#/')location.hash='#/';else route();
+}
+function checkLive(){let v=null;try{v=localStorage.getItem(LV)}catch(e){}if(v)cheat()}
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&quizActive)cheat()});
+function modal(title,text,pw){return new Promise(res=>{
+ const o=document.createElement('div');o.className='ov';
+ o.innerHTML=`<div class="dlg" role="dialog" aria-modal="true" aria-label="${title}"><h3>${title}</h3><p>${text}</p>${pw?'<input type="password" id="mpw" aria-label="Password" autocomplete="off">':''}<div class="actions"><button class="btn pri" id="mok">${pw?'Rollback':'Ya, hapus'}</button><button id="mno">Batal</button></div></div>`;
+ document.body.appendChild(o);const inp=o.querySelector('#mpw');(inp||o.querySelector('#mok')).focus();
+ const end=v=>{o.remove();res(v)};
+ o.querySelector('#mok').onclick=()=>end(pw?inp.value:true);
+ o.querySelector('#mno').onclick=()=>end(null);
+ o.onkeydown=e=>{if(e.key==='Escape')end(null);if(e.key==='Enter'&&pw)end(inp.value)};
+})}
+async function rollback(){
+ const v=await modal('Rollback progres','Masukkan password untuk mengembalikan progres sebelum direset.',true);
+ if(v===null)return;
+ if(v!==RB_PW){toast('Password salah.');return}
+ const b=readBk();
+ if(!b.length){toast('Tidak ada progres yang bisa dikembalikan.');return}
+ done=[...new Set([...b,...done])].sort((x,y)=>x-y);save();try{localStorage.removeItem(BK)}catch(e){}
+ cheatMsg=false;home();toast('Progres dikembalikan.');
 }
 
 const LK='pylangkah-lab-v1';
@@ -461,6 +532,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#aip').hidden)a
 document.body.classList.add('hasai');
 if(window.claude&&claude.use)claude.use('sample').then(s=>{if(s){sample=s;$('#aiv').querySelector('[value=claude]').disabled=false;$('#aiv').value='claude'}}).catch(()=>{});
 function route(){
+ if(quizActive)return cheat();
  if(location.hash==='#/lab')return lab();
  const m=location.hash.match(/^#\/l\/(\d+)$/);
  if(m){const i=+m[1];
@@ -470,9 +542,9 @@ function route(){
  home();window.scrollTo(0,0);
 }
 window.addEventListener('hashchange',route);
-$('#reset').onclick=()=>{if(confirm('Hapus semua progres dan mulai dari awal?')){done=[];save();location.hash='#/';route();toast('Progres direset.')}};
+$('#reset').onclick=async()=>{if(await modal('Ulangi dari awal','Hapus semua progres dan mulai dari awal?')){done=[];save();location.hash='#/';route();toast('Progres direset.')}};
 $('#theme').onclick=()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.dataset.theme=dark?'light':'dark'};
-route();
+checkLive();route();
 </script>
 </body>
 </html>
