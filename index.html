@@ -419,23 +419,36 @@ const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 function fmt(t){return t.split(/```(?:python|py)?\n?/).map((p,i)=>i%2?`<pre>${esc(p.replace(/\n$/,''))}</pre>`:esc(p).replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>')).join('')}
 function addTry(root){root.querySelectorAll('pre').forEach(p=>{if(p.parentNode.className==='pw')return;const w=document.createElement('div');w.className='pw';p.replaceWith(w);w.append(p);
  const b=document.createElement('button');b.className='try';b.textContent='Coba di Lab';b.onclick=()=>{cells.push(p.textContent);saveCells();aiOpen(false);if(location.hash==='#/lab')lab();else location.hash='#/lab'};w.append(b)})}
-document.body.insertAdjacentHTML('beforeend',`<button class="fab" id="fab" hidden>Tanya AI</button><section class="aip" id="aip" hidden role="dialog" aria-label="Tanya AI"><div class="aih"><b>Tanya AI</b><span class="small">Tutor Python</span><span class="sp"></span><button id="aix">Tutup</button></div><div class="msgs" id="msgs" aria-live="polite"></div><div class="aif"><textarea id="aiq" rows="2" placeholder="Tulis pertanyaanmu tentang Python..." aria-label="Pertanyaan"></textarea><button class="btn pri" id="ais">Kirim</button></div></section>`);
+document.body.insertAdjacentHTML('beforeend',`<button class="fab" id="fab">Tanya AI</button><section class="aip" id="aip" hidden role="dialog" aria-label="Tanya AI"><div class="aih"><b>Tanya AI</b><select id="aiv" aria-label="Sumber AI" style="font:600 14px Figtree,sans-serif;border:1.5px solid var(--line);border-radius:8px;padding:5px;background:var(--bg);color:var(--ink);max-width:48vw"><option value="claude" disabled>Claude</option><option value="ext" selected>API eksternal (GLM)</option></select><span class="sp"></span><button id="aix">Tutup</button></div><div class="msgs" id="msgs" aria-live="polite"></div><div class="aif"><textarea id="aiq" rows="2" placeholder="Tulis pertanyaanmu tentang Python..." aria-label="Pertanyaan"></textarea><button class="btn pri" id="ais">Kirim</button></div></section>`);
 const HINTS=['Apa beda list dan dictionary?','Jelaskan for loop dengan contoh sederhana','Kenapa muncul IndentationError?'];
 function resetMsgs(){$('#msgs').innerHTML='<div class="hint"><p class="small">Tanyakan apa saja tentang Python. Beberapa ide:</p>'+HINTS.map(h=>`<div style="margin:6px 0"><button class="chip">${h}</button></div>`).join('')+'</div>'}
 resetMsgs();
-function aiOpen(o){$('#aip').hidden=!o;$('#fab').hidden=o||!sample;if(o)$('#aiq').focus()}
+function aiOpen(o){$('#aip').hidden=!o;$('#fab').hidden=o;if(o)$('#aiq').focus()}
 function bubble(c,t){const m=$('#msgs');const h=m.querySelector('.hint');if(h)h.remove();const b=document.createElement('div');b.className='m '+c;if(c==='u')b.textContent=t;else b.innerHTML=t;m.appendChild(b);m.scrollTop=m.scrollHeight;return b}
 function ctx(){const m=location.hash.match(/^#\/l\/(\d+)$/);return m&&L[+m[1]]?'Siswa sedang membaca materi "'+L[+m[1]].t+'"':location.hash==='#/lab'?'Siswa sedang memakai Lab Kode':'Siswa sedang di peta materi'}
+async function askExt(turns){
+ const hist=turns.map(m=>(m.role==='user'?'Siswa: ':'Tutor: ')+m.content).join('\n\n');
+ const u='https://api.siputzx.my.id/api/ai/glm47flash?'+new URLSearchParams({prompt:hist.slice(-3500),system:SYS,temperature:'0.7'});
+ const r=await fetch(u,{signal:ctrl.signal});
+ if(!r.ok)throw {code:'http'};
+ const j=await r.json().catch(()=>null);
+ const pick=x=>typeof x==='string'?x:x&&typeof x==='object'?(pick(x.response)||pick(x.content)||pick(x.text)||pick(x.message)||pick(x.result)||pick(x.data)||''):'';
+ const t=pick(j&&(j.data??j.result??j.response??j));
+ if(!t)throw {code:'format'};
+ return t}
 async function send(text){
- if(!sample||busy||!text.trim())return;
+ if(busy||!text.trim())return;
  busy=true;$('#ais').textContent='Hentikan';$('#aiq').value='';
  msgs.push({role:'user',content:text});bubble('u',text);const b=bubble('a','Berpikir...');
  const turns=msgs.slice(-7).map(m=>({role:m.role,content:m.content}));
- turns[turns.length-1].content+='\n\n[Konteks: '+ctx()+']';turns[0].content=SYS+'\n\n'+turns[0].content;
+ turns[turns.length-1].content+='\n\n[Konteks: '+ctx()+']';
  ctrl=new AbortController();
- try{const r=await sample(turns,{onText:({text})=>{b.innerHTML=fmt(text);$('#msgs').scrollTop=$('#msgs').scrollHeight},signal:ctrl.signal,cache:false});
-  msgs.push({role:'assistant',content:r.text});b.innerHTML=fmt(r.text);addTry(b)}
- catch(e){msgs.pop();const c=e&&e.code;b.textContent=c==='cancelled'?'Dihentikan.':c==='not_granted'?'Izin ditolak, jadi AI tidak bisa dipakai.':c==='rate_limited'?'Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi.':'AI sedang tidak bisa menjawab. Coba lagi nanti.';b.classList.add('err')}
+ const useExt=$('#aiv').value==='ext'||!sample;
+ try{let txt;
+  if(useExt)txt=await askExt(turns);
+  else{turns[0].content=SYS+'\n\n'+turns[0].content;const r=await sample(turns,{onText:({text})=>{b.innerHTML=fmt(text);$('#msgs').scrollTop=$('#msgs').scrollHeight},signal:ctrl.signal,cache:false});txt=r.text}
+  msgs.push({role:'assistant',content:txt});b.innerHTML=fmt(txt);addTry(b)}
+ catch(e){msgs.pop();const c=e&&e.code,n=e&&e.name;b.textContent=(c==='cancelled'||n==='AbortError')?'Dihentikan.':c==='not_granted'?'Izin ditolak, jadi AI tidak bisa dipakai.':c==='rate_limited'?'Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi.':c==='format'?'Respons dari API eksternal tidak dikenali.':c==='http'?'API eksternal sedang bermasalah. Coba lagi nanti.':useExt?'Tidak bisa terhubung ke API eksternal. Di halaman terbit ini koneksi ke situs lain diblokir, jadi buka file HTML-nya langsung di perangkatmu. Bisa juga karena internetmu atau API-nya sedang bermasalah.':'AI sedang tidak bisa menjawab. Coba lagi nanti.';b.classList.add('err')}
  busy=false;ctrl=null;$('#ais').textContent='Kirim';
 }
 function askAI(t){aiOpen(true);send(t)}
@@ -445,7 +458,8 @@ $('#ais').onclick=()=>{if(busy&&ctrl)ctrl.abort();else send($('#aiq').value)};
 $('#aiq').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send($('#aiq').value)}};
 $('#msgs').onclick=e=>{const c=e.target.closest('.hint .chip');if(c)send(c.textContent)};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#aip').hidden)aiOpen(false)});
-if(window.claude&&claude.use)claude.use('sample').then(s=>{if(s){sample=s;document.body.classList.add('hasai');if($('#aip').hidden)$('#fab').hidden=false}}).catch(()=>{});
+document.body.classList.add('hasai');
+if(window.claude&&claude.use)claude.use('sample').then(s=>{if(s){sample=s;$('#aiv').querySelector('[value=claude]').disabled=false;$('#aiv').value='claude'}}).catch(()=>{});
 function route(){
  if(location.hash==='#/lab')return lab();
  const m=location.hash.match(/^#\/l\/(\d+)$/);
