@@ -67,6 +67,35 @@ code{font:600 .9em 'JetBrains Mono',monospace;background:var(--blue2);padding:1p
 .res.fail{background:var(--badbg);color:var(--bad)}
 .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;font-weight:600;font-size:15px;max-width:90vw;z-index:9}
+.cell{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:12px;margin:16px 0}
+.cell textarea{width:100%;min-height:96px;resize:none;overflow:hidden;background:var(--code);color:var(--codeink);border:0;border-radius:10px;padding:14px;font:400 15px/1.6 'JetBrains Mono',monospace;tab-size:4;white-space:pre}
+.cell textarea:focus-visible{outline:3px solid var(--gold)}
+.crow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.crow .sp{flex:1}
+.outbox{margin-top:10px;background:var(--bg);border-left:4px solid var(--gold);border-radius:0 10px 10px 0;padding:10px 14px;font:400 14px/1.55 'JetBrains Mono',monospace;white-space:pre-wrap;word-break:break-word;min-height:20px}
+.outbox:empty{display:none}
+.outbox .er{color:var(--bad);font-weight:600}.outbox .mute{color:var(--mute)}
+.outbox input{font:inherit;color:inherit;background:var(--card);border:1.5px solid var(--blue);border-radius:6px;padding:1px 6px;min-width:12ch}
+.pw{position:relative}
+.try{position:absolute;top:10px;right:10px;font-size:13px;padding:4px 10px;background:var(--blue);color:#fff;border-color:var(--blue)}
+.aibtn{display:none}.hasai .aibtn{display:inline-block}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:14px 0 0}
+.chip{font:600 13px 'JetBrains Mono',monospace;padding:5px 10px;border-radius:8px;background:var(--blue2);color:var(--blue);border-color:var(--blue2)}
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:6;background:var(--gold);border-color:var(--gold);color:#14213d;border-radius:99px;padding:12px 20px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.aip{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:600px;height:min(80vh,600px);z-index:8;background:var(--card);border:1.5px solid var(--line);border-bottom:0;border-radius:20px 20px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.25);display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom,0px)}
+.aip[hidden],.fab[hidden]{display:none}
+.aih{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1.5px solid var(--line)}
+.aih b{font:700 18px 'Bricolage Grotesque'}.aih .sp{flex:1}
+.msgs{flex:1;overflow-y:auto;padding:14px 16px}
+.m{max-width:92%;padding:10px 14px;border-radius:14px;margin:8px 0;font-size:16px;line-height:1.55;word-break:break-word}
+.m.u{background:var(--blue);color:#fff;margin-left:auto;white-space:pre-wrap}
+.m.a{background:var(--bg);border:1.5px solid var(--line)}
+.m.err{color:var(--bad)}
+.m pre{font-size:13px;padding:12px;margin:8px 0}
+.m .try{top:6px;right:6px}
+.hint .chip{font-family:Figtree,sans-serif;font-size:14px;text-align:left}
+.aif{display:flex;gap:8px;padding:10px 12px;border-top:1.5px solid var(--line)}
+.aif textarea{flex:1;resize:none;font:400 16px/1.4 Figtree,sans-serif;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg);color:var(--ink)}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -74,7 +103,7 @@ code{font:600 .9em 'JetBrains Mono',monospace;background:var(--blue2);padding:1p
 <div class="wrap">
 <header>
 <a class="brand" href="#/"><i></i>PyLangkah</a>
-<div class="tools"><button id="theme" aria-label="Ganti tema">Tema</button><button id="reset">Ulangi dari awal</button></div>
+<div class="tools"><a class="btn" href="#/lab">Lab Kode</a><button id="theme" aria-label="Ganti tema">Tema</button><button id="reset">Ulangi dari awal</button></div>
 </header>
 <main id="app"></main>
 </div>
@@ -302,6 +331,8 @@ function lesson(i){
  <div class="actions"><a class="btn" href="${i?'#/l/'+(i-1):'#/'}">${i?'Materi sebelumnya':'Kembali ke peta'}</a></div></article>`;
  app.querySelectorAll('pre').forEach(p=>{if(p.querySelector('span'))return;
   p.innerHTML=p.innerHTML.replace(/(#[^\n]*)|("[^"\n]*"|'[^'\n]*')|\b(def|if|elif|else|for|while|in|return|import|try|except|print|input|int|len|range|True|False|break|continue|not|enumerate)\b/g,(m,c,s,k)=>c?`<span class="c">${m}</span>`:s?`<span class="s">${m}</span>`:`<span class="k">${m}</span>`)});
+ app.querySelectorAll('pre').forEach(p=>{const w=document.createElement('div');w.className='pw';p.replaceWith(w);w.append(p);
+  const b=document.createElement('button');b.className='try';b.textContent='Coba di Lab';b.onclick=()=>{cells.push(p.textContent);saveCells();location.hash='#/lab'};w.append(b)});
  window.scrollTo(0,0);
  $('#chk').onclick=()=>{
   let sc=0,miss=false;
@@ -320,7 +351,103 @@ function lesson(i){
  };
 }
 
+const LK='pylangkah-lab-v1';
+let cells=[];
+try{cells=JSON.parse(localStorage.getItem(LK)||'[]')}catch(e){cells=[]}
+const saveCells=()=>{try{localStorage.setItem(LK,JSON.stringify(cells))}catch(e){}};
+const SRC=[['https://cdnjs.cloudflare.com/ajax/libs/skulpt/1.2.0/skulpt.min.js','https://cdnjs.cloudflare.com/ajax/libs/skulpt/1.2.0/skulpt-stdlib.js'],['https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js','https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js']];
+let skP=null,skReady=false;
+function loadSk(){if(skReady)return Promise.resolve();if(skP)return skP;
+ const ld=u=>new Promise((ok,no)=>{const s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=()=>no();document.head.appendChild(s)});
+ skP=(async()=>{for(const [a,b] of SRC){try{await ld(a);await ld(b);if(window.Sk){skReady=true;return}}catch(e){}}throw 0})().catch(e=>{skP=null;throw e});return skP}
+async function runCell(i,out,btn){
+ out.textContent='';btn.disabled=true;btn.textContent='Berjalan...';
+ const add=(t,c)=>{const s=document.createElement('span');if(c)s.className=c;s.textContent=t;out.appendChild(s)};
+ try{await loadSk()}catch(e){add('Mesin Python gagal dimuat. Periksa koneksi internet, lalu muat ulang halaman.','er');btn.disabled=false;btn.textContent='Jalankan';return}
+ Sk.configure({output:t=>add(t),read:x=>{if(!Sk.builtinFiles||Sk.builtinFiles.files[x]===undefined)throw "File not found: '"+x+"'";return Sk.builtinFiles.files[x]},__future__:Sk.python3,execLimit:20000,inputfunTakesPrompt:true,
+  inputfun:p=>new Promise(res=>{const row=document.createElement('span');const lb=document.createElement('span');lb.textContent=p;const inp=document.createElement('input');inp.setAttribute('aria-label','Jawaban untuk input');row.append(lb,inp);out.appendChild(row);inp.focus();
+   inp.onkeydown=e=>{if(e.key==='Enter'){inp.disabled=true;out.appendChild(document.createTextNode('\n'));Sk.execStart=Date.now();res(inp.value)}}})});
+ Sk.execStart=Date.now();
+ try{await Sk.misceval.asyncToPromise(()=>Sk.importMainWithBody('<stdin>',false,cells[i],true))}
+ catch(e){const t=out.textContent;add((t&&!t.endsWith('\n')?'\n':'')+e.toString()+'\n','er')}
+ if(!out.textContent)add('Selesai, tidak ada output. Gunakan print() untuk menampilkan hasil.','mute');
+ btn.disabled=false;btn.textContent='Jalankan';
+}
+function drawCells(){
+ const box=$('#cells');box.innerHTML='';
+ cells.forEach((code,i)=>{
+  const c=document.createElement('div');c.className='cell';
+  c.innerHTML=`<textarea spellcheck="false" aria-label="Sel kode ${i+1}"></textarea><div class="crow"><button class="btn pri run">Jalankan</button><button class="clr">Hapus output</button><button class="aibtn ai-e">Jelaskan (AI)</button><button class="aibtn ai-f">Perbaiki (AI)</button><span class="sp"></span><button class="del">Hapus sel</button></div><div class="outbox" role="log" aria-live="polite"></div>`;
+  const ta=c.querySelector('textarea'),out=c.querySelector('.outbox'),run=c.querySelector('.run');
+  ta.value=code;
+  const fit=()=>{ta.style.height='auto';ta.style.height=Math.max(96,ta.scrollHeight)+'px'};
+  ta.addEventListener('input',()=>{cells[i]=ta.value;saveCells();fit()});
+  ta.addEventListener('keydown',e=>{
+   if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart;ta.setRangeText('    ',s,ta.selectionEnd,'end');ta.dispatchEvent(new Event('input'))}
+   else if(e.key==='Enter'&&(e.ctrlKey||e.metaKey||e.shiftKey)){e.preventDefault();if(!run.disabled)runCell(i,out,run)}
+   else if(e.key==='Enter'&&ta.selectionStart===ta.selectionEnd){e.preventDefault();const v=ta.value,s=ta.selectionStart,ln=v.slice(v.lastIndexOf('\n',s-1)+1,s);ta.setRangeText('\n'+ln.match(/^ */)[0]+(ln.trimEnd().endsWith(':')?'    ':''),s,s,'end');ta.dispatchEvent(new Event('input'))}});
+  ta.addEventListener('focus',()=>{lastTa=ta});
+  c.querySelector('.ai-e').onclick=()=>askAI('Jelaskan kode Python ini baris demi baris dengan bahasa sederhana untuk pemula:\n```python\n'+ta.value+'\n```');
+  c.querySelector('.ai-f').onclick=()=>askAI('Kodeku bermasalah atau hasilnya tidak sesuai harapan. Tolong cari penyebabnya dan tunjukkan perbaikannya.\n```python\n'+ta.value+'\n```\nOutput atau error:\n'+(out.textContent.trim()||'(belum dijalankan)'));
+  run.onclick=()=>runCell(i,out,run);
+  c.querySelector('.clr').onclick=()=>{out.textContent=''};
+  c.querySelector('.del').onclick=()=>{if(cells.length===1&&!cells[0].trim())return toast('Sel terakhir tidak bisa dihapus.');cells.splice(i,1);if(!cells.length)cells.push('');saveCells();drawCells()};
+  box.appendChild(c);fit();
+ });
+}
+function lab(){
+ if(!cells.length){cells=['print("Halo, Python!")\n\nfor i in range(3):\n    print("Ulangan", i)'];saveCells()}
+ app.innerHTML=`<div class="lesson"><div class="crumb"><a href="#/">Peta materi</a> / Lab Kode</div><h1>Lab Kode</h1>
+ <p>Tulis Python lalu jalankan langsung di browser, tanpa instal apa pun. Tiap sel berjalan sendiri, jadi variabel dari satu sel tidak terbawa ke sel lain.</p>
+ <p class="small">Pintasan: Ctrl+Enter atau Shift+Enter untuk menjalankan. Tab untuk indentasi. Kodemu tersimpan otomatis di browser ini.</p>
+ <div class="chips"><span class="small">Sisipkan potongan kode:</span></div><div class="chips" id="chips"></div>
+ <div id="cells"></div><div class="actions"><button class="btn pri" id="add">Tambah sel kode</button></div>
+ <div class="note">Mesin Python di sini mendukung sebagian besar fitur dasar yang diajarkan di materi. Library besar seperti numpy atau pandas belum tersedia.</div></div>`;
+ drawCells();
+ $('#chips').innerHTML=SN.map((s,k)=>`<button class="chip" data-k="${k}">${s[0]}</button>`).join('');
+ $('#chips').onmousedown=e=>{if(e.target.closest('.chip'))e.preventDefault()};
+ $('#chips').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;const ta=(lastTa&&document.contains(lastTa))?lastTa:[...document.querySelectorAll('.cell textarea')].pop();insSnip(ta,SN[b.dataset.k][1])};
+ $('#add').onclick=()=>{cells.push('');saveCells();drawCells();const t=document.querySelectorAll('.cell textarea');t[t.length-1].focus()};
+ window.scrollTo(0,0);
+}
+let lastTa=null,sample=null,busy=false,ctrl=null,msgs=[];
+const SN=[['print','print("|")'],['input','nama = input("|")'],['if','if |:\n    '],['for','for i in range(|):\n    '],['while','while |:\n    '],['def','def nama(|):\n    return '],['list','daftar = [|]'],['dict','data = {"|": }'],['try','try:\n    |\nexcept ValueError:\n    print("Error")']];
+function insSnip(ta,t){if(!ta)return;const s=ta.selectionStart,e=ta.selectionEnd,v=ta.value,ind=(v.slice(v.lastIndexOf('\n',s-1)+1,s).match(/^ */)||[''])[0];
+ let x=t.split('\n').join('\n'+ind);const c=x.indexOf('|');x=x.replace('|','');ta.setRangeText(x,s,e,'end');if(c>=0)ta.setSelectionRange(s+c,s+c);ta.dispatchEvent(new Event('input'));ta.focus()}
+const SYS='Kamu tutor Python yang sabar untuk pemula di Indonesia. Jawab dalam bahasa Indonesia yang sederhana dan singkat (maksimal sekitar 150 kata). Beri contoh kode kecil dalam blok ```python bila membantu. Kode siswa dijalankan di mesin Python dasar di browser, jadi hindari numpy, pandas, dan library eksternal. Jika siswa meminta jawaban kuis, beri petunjuk saja, jangan jawabannya. Jika pertanyaan di luar topik belajar Python, arahkan kembali dengan ramah.';
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function fmt(t){return t.split(/```(?:python|py)?\n?/).map((p,i)=>i%2?`<pre>${esc(p.replace(/\n$/,''))}</pre>`:esc(p).replace(/`([^`\n]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>')).join('')}
+function addTry(root){root.querySelectorAll('pre').forEach(p=>{if(p.parentNode.className==='pw')return;const w=document.createElement('div');w.className='pw';p.replaceWith(w);w.append(p);
+ const b=document.createElement('button');b.className='try';b.textContent='Coba di Lab';b.onclick=()=>{cells.push(p.textContent);saveCells();aiOpen(false);if(location.hash==='#/lab')lab();else location.hash='#/lab'};w.append(b)})}
+document.body.insertAdjacentHTML('beforeend',`<button class="fab" id="fab" hidden>Tanya AI</button><section class="aip" id="aip" hidden role="dialog" aria-label="Tanya AI"><div class="aih"><b>Tanya AI</b><span class="small">Tutor Python</span><span class="sp"></span><button id="aix">Tutup</button></div><div class="msgs" id="msgs" aria-live="polite"></div><div class="aif"><textarea id="aiq" rows="2" placeholder="Tulis pertanyaanmu tentang Python..." aria-label="Pertanyaan"></textarea><button class="btn pri" id="ais">Kirim</button></div></section>`);
+const HINTS=['Apa beda list dan dictionary?','Jelaskan for loop dengan contoh sederhana','Kenapa muncul IndentationError?'];
+function resetMsgs(){$('#msgs').innerHTML='<div class="hint"><p class="small">Tanyakan apa saja tentang Python. Beberapa ide:</p>'+HINTS.map(h=>`<div style="margin:6px 0"><button class="chip">${h}</button></div>`).join('')+'</div>'}
+resetMsgs();
+function aiOpen(o){$('#aip').hidden=!o;$('#fab').hidden=o||!sample;if(o)$('#aiq').focus()}
+function bubble(c,t){const m=$('#msgs');const h=m.querySelector('.hint');if(h)h.remove();const b=document.createElement('div');b.className='m '+c;if(c==='u')b.textContent=t;else b.innerHTML=t;m.appendChild(b);m.scrollTop=m.scrollHeight;return b}
+function ctx(){const m=location.hash.match(/^#\/l\/(\d+)$/);return m&&L[+m[1]]?'Siswa sedang membaca materi "'+L[+m[1]].t+'"':location.hash==='#/lab'?'Siswa sedang memakai Lab Kode':'Siswa sedang di peta materi'}
+async function send(text){
+ if(!sample||busy||!text.trim())return;
+ busy=true;$('#ais').textContent='Hentikan';$('#aiq').value='';
+ msgs.push({role:'user',content:text});bubble('u',text);const b=bubble('a','Berpikir...');
+ const turns=msgs.slice(-7).map(m=>({role:m.role,content:m.content}));
+ turns[turns.length-1].content+='\n\n[Konteks: '+ctx()+']';turns[0].content=SYS+'\n\n'+turns[0].content;
+ ctrl=new AbortController();
+ try{const r=await sample(turns,{onText:({text})=>{b.innerHTML=fmt(text);$('#msgs').scrollTop=$('#msgs').scrollHeight},signal:ctrl.signal,cache:false});
+  msgs.push({role:'assistant',content:r.text});b.innerHTML=fmt(r.text);addTry(b)}
+ catch(e){msgs.pop();const c=e&&e.code;b.textContent=c==='cancelled'?'Dihentikan.':c==='not_granted'?'Izin ditolak, jadi AI tidak bisa dipakai.':c==='rate_limited'?'Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi.':'AI sedang tidak bisa menjawab. Coba lagi nanti.';b.classList.add('err')}
+ busy=false;ctrl=null;$('#ais').textContent='Kirim';
+}
+function askAI(t){aiOpen(true);send(t)}
+$('#fab').onclick=()=>aiOpen(true);
+$('#aix').onclick=()=>aiOpen(false);
+$('#ais').onclick=()=>{if(busy&&ctrl)ctrl.abort();else send($('#aiq').value)};
+$('#aiq').onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send($('#aiq').value)}};
+$('#msgs').onclick=e=>{const c=e.target.closest('.hint .chip');if(c)send(c.textContent)};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#aip').hidden)aiOpen(false)});
+if(window.claude&&claude.use)claude.use('sample').then(s=>{if(s){sample=s;document.body.classList.add('hasai');if($('#aip').hidden)$('#fab').hidden=false}}).catch(()=>{});
 function route(){
+ if(location.hash==='#/lab')return lab();
  const m=location.hash.match(/^#\/l\/(\d+)$/);
  if(m){const i=+m[1];
   if(i>=L.length)return location.hash='#/';
