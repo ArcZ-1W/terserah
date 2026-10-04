@@ -1,985 +1,127 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BloxFruit Academy · Belajar PvP</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    body {
-      background: #e8eaee;
-      color: #2d3139;
-      line-height: 1.6;
-      padding: 1.5rem;
-      min-height: 100vh;
-      background-image:
-        radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.9) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(210, 215, 225, 0.7) 0%, transparent 50%);
-      background-attachment: fixed;
-    }
-
-    .app-container {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    /* ================= HEADER ================= */
-    .header {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 2rem;
-      gap: 1rem;
-      background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(255, 255, 255, 0.8);
-      border-radius: 22px;
-      padding: 0.9rem 1.5rem;
-      box-shadow: 0 8px 28px rgba(90, 95, 110, 0.08);
-    }
-
-    .logo-area {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-      cursor: pointer;
-    }
-
-    .logo-icon {
-      background: linear-gradient(135deg, #a8b0c2, #8b93a8);
-      width: 46px;
-      height: 46px;
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1.6rem;
-      box-shadow: 0 6px 14px rgba(120, 128, 150, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-    }
-
-    .logo-text h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: #3a3f4b;
-    }
-
-    .logo-text span {
-      font-size: 0.75rem;
-      color: #7a8194;
-      font-weight: 500;
-      letter-spacing: 0.02em;
-    }
-
-    .user-area {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      background: rgba(255, 255, 255, 0.7);
-      padding: 0.4rem 1.2rem 0.4rem 0.8rem;
-      border-radius: 40px;
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      box-shadow: 0 4px 12px rgba(100, 105, 120, 0.05);
-    }
-
-    .user-area i { color: #8b93a8; font-size: 1rem; }
-
-    .user-avatar {
-      background: linear-gradient(135deg, #d5dae3, #bcc3d0);
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      color: #4a5060;
-      font-size: 0.75rem;
-      border: 1px solid rgba(255, 255, 255, 0.8);
-    }
-
-    .user-name { font-weight: 600; font-size: 0.9rem; color: #4a5060; }
-
-    /* ================= HERO ================= */
-    .hero {
-      background: rgba(255, 255, 255, 0.55);
-      backdrop-filter: blur(22px);
-      -webkit-backdrop-filter: blur(22px);
-      border-radius: 28px;
-      padding: 2rem 2.5rem;
-      margin-bottom: 2rem;
-      border: 1px solid rgba(255, 255, 255, 0.85);
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 12px 32px rgba(90, 95, 110, 0.07);
-      gap: 1.5rem;
-    }
-
-    .hero-text h2 {
-      font-size: 1.9rem;
-      font-weight: 800;
-      margin-bottom: 0.6rem;
-      color: #333843;
-      letter-spacing: -0.02em;
-    }
-
-    .hero-text h2 span {
-      background: linear-gradient(135deg, #6b7387, #8d95a8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .hero-text p { color: #6b7285; max-width: 520px; font-size: 1rem; }
-
-    .hero-stats {
-      display: flex;
-      gap: 1.8rem;
-      background: rgba(255, 255, 255, 0.6);
-      padding: 1rem 1.8rem;
-      border-radius: 60px;
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      box-shadow: 0 4px 14px rgba(100, 105, 120, 0.05);
-    }
-
-    .stat-item { text-align: center; }
-    .stat-number { font-size: 1.5rem; font-weight: 800; color: #5f677b; }
-    .stat-label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: #8b93a8;
-      font-weight: 600;
-    }
-
-    /* ================= SECTION TITLE ================= */
-    .section-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      margin-bottom: 1.5rem;
-      padding: 0 0.3rem;
-    }
-
-    .section-title h3 {
-      font-size: 1.35rem;
-      font-weight: 700;
-      color: #3a3f4b;
-      letter-spacing: -0.01em;
-    }
-
-    .section-title span {
-      color: #5f677b;
-      font-weight: 600;
-      font-size: 0.85rem;
-      background: rgba(255, 255, 255, 0.7);
-      padding: 0.3rem 1rem;
-      border-radius: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      box-shadow: 0 2px 8px rgba(100, 105, 120, 0.04);
-    }
-
-    /* ================= GRID ================= */
-    .materi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-      gap: 1.6rem;
-      margin-bottom: 3rem;
-    }
-
-    .card-materi {
-      background: rgba(255, 255, 255, 0.65);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border-radius: 26px;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      box-shadow: 0 8px 26px rgba(90, 95, 110, 0.06);
-      transition: all 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      cursor: pointer;
-    }
-
-    .card-materi:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 18px 36px rgba(90, 95, 110, 0.12);
-      border-color: rgba(255, 255, 255, 1);
-      background: rgba(255, 255, 255, 0.8);
-    }
-
-    .card-header-icon {
-      height: 110px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.8rem;
-      color: white;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card-header-icon::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.06));
-    }
-
-    .card-header-icon.haki    { background: linear-gradient(145deg, #9aa2b4, #6b7387); }
-    .card-header-icon.fruit   { background: linear-gradient(145deg, #b0b8c8, #848da2); }
-    .card-header-icon.melee   { background: linear-gradient(145deg, #8d95a8, #5f677b); }
-    .card-header-icon.sword   { background: linear-gradient(145deg, #a8b0c2, #7a8296); }
-    .card-header-icon.strategy{ background: linear-gradient(145deg, #bcc3d0, #8b93a8); }
-    .card-header-icon.combo   { background: linear-gradient(145deg, #c5ccd8, #9aa2b4); }
-
-    .card-header-icon i {
-      position: relative;
-      z-index: 1;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .card-body { padding: 1.4rem 1.4rem 1rem; flex: 1; }
-
-    .badge {
-      display: inline-block;
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      padding: 0.3rem 0.9rem;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.8);
-      color: #5f677b;
-      margin-bottom: 0.9rem;
-      border: 1px solid rgba(255, 255, 255, 1);
-      box-shadow: 0 2px 6px rgba(100, 105, 120, 0.04);
-    }
-
-    .card-body h4 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-bottom: 0.55rem;
-      color: #333843;
-      line-height: 1.35;
-    }
-
-    .card-body p {
-      color: #6b7285;
-      font-size: 0.86rem;
-      margin-bottom: 1.2rem;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .meta-info {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.78rem;
-      color: #8b93a8;
-      border-top: 1px solid rgba(220, 225, 235, 0.6);
-      padding-top: 0.9rem;
-      margin-top: auto;
-    }
-
-    .meta-info i { margin-right: 4px; color: #9aa2b4; font-size: 0.75rem; }
-
-    .meta-info .durasi {
-      background: rgba(255, 255, 255, 0.7);
-      padding: 0.2rem 0.7rem;
-      border-radius: 30px;
-      border: 1px solid rgba(255, 255, 255, 0.9);
-    }
-
-    .card-footer { padding: 0 1.4rem 1.4rem; }
-
-    .btn-materi {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.8);
-      border: 1px solid rgba(255, 255, 255, 1);
-      padding: 0.8rem;
-      border-radius: 40px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      color: #5f677b;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      transition: all 0.25s;
-      cursor: pointer;
-      box-shadow: 0 3px 10px rgba(100, 105, 120, 0.05);
-    }
-
-    .btn-materi:hover {
-      background: linear-gradient(135deg, #8d95a8, #6b7387);
-      color: white;
-      border-color: transparent;
-      box-shadow: 0 8px 20px rgba(120, 128, 150, 0.25);
-    }
-
-    .btn-materi:hover i { color: white; }
-
-    .btn-materi i { font-size: 0.8rem; color: #8b93a8; transition: color 0.2s; }
-
-    /* ================= DETAIL PAGE ================= */
-    .detail-page { display: none; padding-bottom: 90px; }
-    .detail-page.active { display: block; }
-    .main-page.hidden { display: none; }
-
-    .detail-header-card {
-      background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      border-radius: 28px;
-      padding: 2rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 12px 32px rgba(90, 95, 110, 0.07);
-    }
-
-    .detail-top {
-      display: flex;
-      align-items: center;
-      gap: 1.2rem;
-      margin-bottom: 1.2rem;
-    }
-
-    .detail-icon {
-      width: 70px;
-      height: 70px;
-      border-radius: 22px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2rem;
-      color: white;
-      flex-shrink: 0;
-      box-shadow: 0 8px 20px rgba(120, 128, 150, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-    }
-
-    .detail-icon.haki    { background: linear-gradient(145deg, #9aa2b4, #6b7387); }
-    .detail-icon.fruit   { background: linear-gradient(145deg, #b0b8c8, #848da2); }
-    .detail-icon.melee   { background: linear-gradient(145deg, #8d95a8, #5f677b); }
-    .detail-icon.sword   { background: linear-gradient(145deg, #a8b0c2, #7a8296); }
-    .detail-icon.strategy{ background: linear-gradient(145deg, #bcc3d0, #8b93a8); }
-    .detail-icon.combo   { background: linear-gradient(145deg, #c5ccd8, #9aa2b4); }
-
-    .detail-titles h2 {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: #333843;
-      line-height: 1.25;
-      margin-bottom: 0.4rem;
-    }
-
-    .detail-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-
-    .detail-tags .tag {
-      background: rgba(255, 255, 255, 0.8);
-      border: 1px solid rgba(255, 255, 255, 1);
-      padding: 0.25rem 0.85rem;
-      border-radius: 30px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      color: #5f677b;
-      text-transform: capitalize;
-    }
-
-    .detail-desc {
-      color: #6b7285;
-      font-size: 0.95rem;
-      border-left: 3px solid #bcc3d0;
-      padding-left: 1rem;
-      margin-top: 0.5rem;
-    }
-
-    .section-block {
-      background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      border-radius: 24px;
-      padding: 1.6rem 1.8rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 8px 26px rgba(90, 95, 110, 0.06);
-    }
-
-    .section-block h3 {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #3a3f4b;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .section-block h3 i {
-      color: #8b93a8;
-      font-size: 1rem;
-      background: rgba(255, 255, 255, 0.8);
-      width: 32px;
-      height: 32px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(255, 255, 255, 1);
-    }
-
-    .section-block p {
-      color: #4a5060;
-      font-size: 0.92rem;
-      margin-bottom: 0.8rem;
-      line-height: 1.75;
-    }
-
-    .section-block ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .section-block ul li {
-      color: #4a5060;
-      font-size: 0.9rem;
-      padding: 0.5rem 0 0.5rem 1.8rem;
-      position: relative;
-      border-bottom: 1px solid rgba(220, 225, 235, 0.5);
-    }
-
-    .section-block ul li:last-child { border-bottom: none; }
-
-    .section-block ul li::before {
-      content: '\f058';
-      font-family: 'Font Awesome 6 Free';
-      font-weight: 900;
-      position: absolute;
-      left: 0;
-      color: #9aa2b4;
-      font-size: 0.85rem;
-    }
-
-    /* MEDIA */
-    .media-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1rem;
-    }
-
-    .media-item {
-      border-radius: 18px;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      box-shadow: 0 6px 20px rgba(90, 95, 110, 0.08);
-      background: #d8dce4;
-      position: relative;
-    }
-
-    .media-item img,
-    .media-item iframe {
-      width: 100%;
-      display: block;
-      border: none;
-    }
-
-    .media-item img { height: auto; }
-
-    .media-item iframe { aspect-ratio: 16 / 9; height: auto; }
-
-    .media-caption {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(10px);
-      padding: 0.7rem 1rem;
-      font-size: 0.78rem;
-      color: #5f677b;
-      font-weight: 600;
-      border-top: 1px solid rgba(220, 225, 235, 0.6);
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .media-caption i { color: #9aa2b4; }
-
-    /* ================= BACK BUTTON ================= */
-    .back-btn {
-      position: fixed;
-      bottom: 28px;
-      right: 28px;
-      z-index: 999;
-      background: linear-gradient(135deg, #8d95a8, #6b7387);
-      color: white;
-      border: 1px solid rgba(255, 255, 255, 0.4);
-      padding: 0.9rem 1.6rem;
-      border-radius: 50px;
-      font-weight: 700;
-      font-size: 0.9rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      box-shadow: 0 12px 28px rgba(120, 128, 150, 0.35);
-      transition: all 0.25s ease;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-
-    .back-btn:hover {
-      transform: translateY(-4px) scale(1.03);
-      box-shadow: 0 18px 36px rgba(120, 128, 150, 0.45);
-    }
-
-    .back-btn:active { transform: translateY(-1px) scale(0.98); }
-
-    .back-btn i { font-size: 0.95rem; }
-
-    /* ================= FOOTER ================= */
-    .footer {
-      text-align: center;
-      padding: 2rem 0 1rem;
-      color: #9aa2b4;
-      font-size: 0.8rem;
-      border-top: 1px solid rgba(220, 225, 235, 0.5);
-      margin-top: 1rem;
-    }
-
-    .footer i { color: #bcc3d0; margin: 0 4px; }
-
-    /* ================= RESPONSIVE ================= */
-    @media (max-width: 700px) {
-      body { padding: 0.9rem; }
-      .header { padding: 0.7rem 1rem; border-radius: 18px; }
-      .hero { padding: 1.5rem; border-radius: 24px; }
-      .hero-text h2 { font-size: 1.4rem; }
-      .hero-stats { padding: 0.7rem 1.2rem; gap: 1rem; width: 100%; justify-content: center; }
-      .stat-number { font-size: 1.2rem; }
-      .logo-text h1 { font-size: 1.2rem; }
-      .user-name { display: none; }
-      .user-area { padding: 0.35rem 0.7rem; }
-      .section-title h3 { font-size: 1.15rem; }
-      .materi-grid { gap: 1.2rem; }
-      .card-header-icon { height: 95px; font-size: 2.4rem; }
-
-      .detail-header-card { padding: 1.4rem; border-radius: 22px; }
-      .detail-top { flex-direction: column; align-items: flex-start; gap: 0.9rem; }
-      .detail-icon { width: 58px; height: 58px; font-size: 1.6rem; border-radius: 18px; }
-      .detail-titles h2 { font-size: 1.25rem; }
-      .section-block { padding: 1.2rem 1.2rem; border-radius: 20px; }
-      .section-block h3 { font-size: 1rem; }
-      .back-btn { bottom: 18px; right: 18px; padding: 0.8rem 1.3rem; font-size: 0.82rem; }
-    }
-  </style>
-</head>
-<body>
-<div class="app-container">
-
-  <!-- ============================================================ -->
-  <!-- MAIN PAGE -->
-  <!-- ============================================================ -->
-  <div class="main-page" id="mainPage">
-
-    <header class="header">
-      <div class="logo-area" onclick="showMain()">
-        <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
-        <div class="logo-text">
-          <h1>BloxFruit Academy</h1>
-          <span>belajar PvP · jadi pro</span>
-        </div>
-      </div>
-      <div class="user-area">
-        <i class="fas fa-bell"></i>
-        <div class="user-avatar">PVP</div>
-        <span class="user-name">Player</span>
-      </div>
-    </header>
-
-    <div class="hero">
-      <div class="hero-text">
-        <h2>Kuasai <span>Blox Fruits</span>,<br>menangkan setiap duel.</h2>
-        <p>Panduan lengkap mulai dari Instinct, pemilihan fruit, melee, sword, sampai combo mematikan. Semua materi disusun rapi untuk kamu.</p>
-      </div>
-      <div class="hero-stats">
-        <div class="stat-item">
-          <div class="stat-number">7</div>
-          <div class="stat-label">Materi</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">5</div>
-          <div class="stat-label">Kategori</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-number">∞</div>
-          <div class="stat-label">Latihan</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Search & Filter DIHAPUS -->
-
-    <div class="section-title">
-      <h3>📖 Materi PvP</h3>
-      <span id="materiCount">7 materi</span>
-    </div>
-
-    <div class="materi-grid" id="materiGrid"></div>
-
-    <footer class="footer">
-      <p>© 2025 BloxFruit Academy · Dibuat untuk komunitas <i class="fas fa-heart"></i> Endless Community</p>
-    </footer>
-  </div>
-
-  <!-- ============================================================ -->
-  <!-- DETAIL PAGE -->
-  <!-- ============================================================ -->
-  <div class="detail-page" id="detailPage">
-    <div id="detailContent"></div>
-  </div>
-
-  <!-- Back Button -->
-  <button class="back-btn" id="backBtn" onclick="showMain()" style="display:none;">
-    <i class="fas fa-arrow-left"></i> Kembali
-  </button>
-
-</div>
-
-<script>
-  // ==============================================================
-  // DATA MATERI + KONTEN DETAIL (teks + media)
-  // ==============================================================
-  const materiData = [
-    {
-      id: 1,
-      judul: "Penggunaan Instinct / Proper",
-      deskripsi: "Cara mengaktifkan, membaca pergerakan musuh, dan memaksimalkan Instinct (Observation Haki) saat PvP. Termasuk timing dodge dan counter.",
-      kategori: "haki",
-      ikon: "fa-eye",
-      durasi: "40 menit",
-      level: "Dasar",
-      pengajar: "Admin Endless",
-      konten: {
-        pengantar: "Instinct (Observation Haki) adalah skill wajib untuk PvP di Blox Fruits. Dengan Instinct yang terlatih, kamu bisa menghindari serangan musuh secara otomatis dan membaca pergerakan mereka sebelum terjadi.",
-        poin: [
-          "Aktifkan Instinct dengan menekan tombol 'Z' (default keyboard) atau ikon Instinct di layar mobile.",
-          "Instinct menguras energi (Energy) saat aktif — pantau bar energi agar tidak habis di tengah pertarungan.",
-          "Semakin tinggi level Instinct, semakin lama durasi aktif dan semakin cepat cooldown-nya.",
-          "Gunakan Instinct saat musuh mendekat atau bersiap mengeluarkan combo besar.",
-          "Kombinasikan dengan Busoshoku Haki (Aura) untuk pertahanan dan serangan yang lebih kuat."
-        ],
-        tips: "Latih Instinct di tempat ramai seperti Cafe atau Colosseum untuk melatih refleks membaca pergerakan pemain lain. Semakin sering duel, semakin tajam Instinct-mu.",
-        media: [
-          { tipe: "image", src: "https://i.imgur.com/3XQ8q9L.png", caption: "Tampilan Instinct saat aktif di Blox Fruits" },
-          { tipe: "video", src: "https://www.youtube.com/embed/dQw4w9WgXcQ", caption: "Video panduan penggunaan Instinct untuk PvP" }
-        ]
-      }
-    },
-    {
-      id: 2,
-      judul: "Cara Nentuin Fruit",
-      deskripsi: "Panduan memilih fruit berdasarkan playstyle: combo, damage, mobility, atau support. Plus tier list fruit meta PvP terkini.",
-      kategori: "fruit",
-      ikon: "fa-apple-alt",
-      durasi: "50 menit",
-      level: "Menengah",
-      pengajar: "Admin Endless",
-      konten: {
-        pengantar: "Memilih fruit yang tepat menentukan gaya bermainmu. Ada fruit untuk combo, damage besar, mobilitas tinggi, atau support tim. Kenali playstyle-mu dulu sebelum memilih.",
-        poin: [
-          "Combo type: Dough, Kitsune, Leopard — cocok untuk pemain agresif yang suka merangkai serangan.",
-          "Damage type: Dragon, Venom, Shadow — damage besar tapi butuh timing yang tepat.",
-          "Mobility type: Portal, Rumble, Light — mobilitas tinggi untuk hit and run.",
-          "Support type: Buddha, Phoenix, Barrier — bertahan dan membantu tim.",
-          "Perhatikan awakening fruit — beberapa fruit jauh lebih kuat setelah di-awaken."
-        ],
-        tips: "Jangan langsung beli fruit mahal. Coba dulu fruit yang kamu punya, pahami combonya, baru tentukan fruit yang cocok dengan gaya mainmu.",
-        media: [
-          { tipe: "image", src: "https://i.imgur.com/8kL2mNp.png", caption: "Tier list fruit PvP terbaru" },
-          { tipe: "video", src: "https://www.youtube.com/embed/dQw4w9WgXcQ", caption: "Review fruit meta untuk PvP 2025" }
-        ]
-      }
-    },
-    {
-      id: 3,
-      judul: "Cara Nentuin Melee",
-      deskripsi: "Memilih fighting style yang cocok: Combat, Dark Step, Electric Claw, Dragon Talon, atau Death Step. Plus kombinasinya.",
-      kategori: "melee",
-      ikon: "fa-fist-raised",
-      durasi: "45 menit",
-      level: "Menengah",
-      pengajar: "Admin Endless",
-      konten: {
-        pengantar: "Melee / Fighting Style adalah senjata utama saat fruit sedang cooldown. Setiap style punya kelebihan dan kombinasi unik dengan fruit tertentu.",
-        poin: [
-          "Combat: seimbang, cocok untuk pemula, combo cepat dan mudah.",
-          "Dark Step: damage tinggi, efek burn, cocok untuk pressure musuh.",
-          "Electric Claw: combo panjang, sulit dihindari, bagus untuk rank tinggi.",
-          "Dragon Talon: damage besar, area luas, cocok untuk grup.",
-          "Death Step: kombinasi damage dan mobilitas, favorit para pro player."
-        ],
-        tips: "Kuasai minimal 2 fighting style berbeda. Ganti style sesuai situasi — misal Electric Claw untuk 1v1, Dragon Talon untuk grup.",
-        media: [
-          { tipe: "image", src: "https://i.imgur.com/5tR8wYz.png", caption: "Perbandingan fighting style di Blox Fruits" },
-          { tipe: "video", src: "https://www.youtube.com/embed/dQw4w9WgXcQ", caption: "Combo melee terbaik untuk PvP" }
-        ]
-      }
-    },
-    {
-      id: 4,
-      judul: "Cara Nentuin Sword",
-      deskripsi: "Rekomendasi sword terbaik untuk PvP seperti Cursed Dual Katana, Dark Blade, True Triple Katana, dan cara mendapatkannya.",
-      kategori: "sword",
-      ikon: "fa-khanda",
-      durasi: "45 menit",
-      level: "Menengah",
-      pengajar: "Admin Endless",
-      konten: {
-        pengantar: "Sword adalah senjata dengan damage besar dan jangkauan luas. Beberapa sword memiliki skill unik yang bisa dikombinasikan dengan fruit dan melee.",
-        poin: [
-          "Cursed Dual Katana (CDK): combo mematikan, cocok untuk burst damage.",
-          "Dark Blade: jangkauan luas, skill ranged, bagus untuk zoning.",
-          "True Triple Katana (TTK): combo cepat, damage besar, meta PvP.",
-          "Sword of Zoro: damage tinggi, skill dash, cocok untuk chase.",
-          "Yama: kombinasi damage dan efek, bagus untuk pressure."
-        ],
-        tips: "Latih combo sword + fruit + melee. Contoh: Sword skill → Fruit skill → Melee finisher. Ini combo true combo yang sulit dihindari.",
-        media: [
-          { tipe: "image", src: "https://i.imgur.com/9pQ2rTs.png", caption: "Sword terbaik untuk PvP di Blox Fruits" },
-          { tipe: "video", src: "https://www.youtube.com/embed/dQw4w9WgXcQ", caption: "Cara mendapatkan Cursed Dual Katana" }
-        ]
-      }
-    },
-    {
-      id: 5,
-      judul: "Best Fruit yang Lu Bakal Pake",
-      deskripsi: "Analisis fruit terbaik untuk PvP berdasarkan meta saat ini: Dough, Kitsune, Leopard, Dragon, Venom, dan lainnya.",
-      kategori: "fruit",
-      ikon: "fa-crown",
-      durasi: "55 menit",
-      level: "Lanjutan",
-      pengajar: "Admin Endless",
-      konten: {
-        pengantar: "Meta Blox Fruits terus berubah setiap update. Tapi ada beberapa fruit yang konsisten kuat di PvP karena combo dan damage-nya.",
-        poin: [
-          "Dough: combo lengkap, damage besar, awakening kuat — top tier.",
-          "Kitsune: mobilitas tinggi, combo cepat, sulit ditangkap.",
-          "Leopard: transformasi kuat, damage besar, bagus untuk 1v1.",
-          "Dragon: damage area besar, cocok untuk grup dan raid.",
-          "Venom: damage over time, mengganggu musuh, bagus untuk pressure."
-        ],
-        tips: "Perhatikan update patch — fruit yang di-nerf bisa turun tier. Selalu cek tier list terbaru sebelum invest fruit mahal.",
-        media: [
-          { tipe: "image", src: "https://i.imgur.com/2kL9mNp.png", caption: "Tier list fruit terbaik 2025" },
-          { tipe: "video", src: "https://www.youtube.com/embed/dQw4w9WgXcQ", caption: "Review fruit meta untuk PvP" }
-        ]
-      }
-    },
-    {
-      id: 6,
-      judul: "Cara Nyari Kelemahan Musuh",
-      deskripsi: "Teknik membaca pola lawan, mengenali cooldown skill, dan memanfaatkan celah untuk menyerang balik dengan efektif.",
-      kategori: "strategy",
-      ikon: "fa-chess",
-      durasi: "50 menit",
-      level: "Lanjutan",
-      pengajar: "Admin Endless",
-      konten: {
-        pengantar: "PvP bukan cuma soal combo — tapi soal membaca lawan. Pemain yang bisa membaca kelemahan musuh akan menang bahkan dengan fruit biasa.",
-        poin: [
-          "Perhatikan pola serangan musuh: apakah mereka suka buka dengan fruit skill?",
-          "Catat cooldown skill musuh — saat mereka habis skill, itu waktu menyerang.",
-          "Perhatikan posisi musuh: apakah mereka dekat jurang atau di area sempit?",
-          "Manfaatkan Instinct untuk menghindari combo pembuka musuh.",
-          "Pancing musuh mengeluarkan skill besar, lalu counter saat cooldown."
-        ],
-        tips: "Rekam duelmu dan tonton ulang. Kamu akan sadar kesalahan dan pola musuh yang sering kamu hadapi.",
-        media: [
-          { tipe: "image", src: "https://i.imgur.com/7yU3vBc.png", caption: "Diagram membaca pola musuh" },
-          { tipe: "video", src: "https://www.youtube.com/embed/dQw4w9WgXcQ", caption: "Cara membaca kelemahan musuh di PvP" }
-        ]
-      }
-    },
-    {
-      id: 7,
-      judul: "Cara Nyari Combo",
-      deskripsi: "Menyusun combo mematikan dari fruit, melee, sword, dan gun. Dilengkapi contoh combo true combo dan cara latihannya.",
-      kategori: "combo",
-      ikon: "fa-bolt",
-      durasi: "60 menit",
-      level: "Lanjutan",
-      pengajar: "Admin Endless",
-      konten: {
-        pengantar: "Combo adalah rangkaian serangan yang membuat musuh tidak bisa bergerak (true combo). Combo yang baik menggabungkan fruit, melee, sword, dan gun.",
-        poin: [
-          "Mulai combo dengan skill yang memiliki stun atau efek mengunci musuh.",
-          "Sambung dengan melee combo untuk damage berkelanjutan.",
-          "Gunakan sword skill untuk burst damage di akhir combo.",
-          "Sisipkan gun (seperti Kabucha atau Serpent Bow) untuk chip damage.",
-          "Latih combo di room private atau dengan teman agar timing sempurna."
-        ],
-        tips: "Setiap fruit punya combo terbaiknya sendiri. Pelajari 2-3 combo andalan, lalu kuasai sampai bisa dilakukan tanpa berpikir.",
-        media: [
-          { tipe: "image", src: "https://i.imgur.com/4rT6yUv.png", caption: "Contoh combo true combo Blox Fruits" },
-          { tipe: "video", src: "https://www.youtube.com/embed/dQw4w9WgXcQ", caption: "Tutorial combo mematikan untuk PvP" }
-        ]
-      }
-    }
-  ];
-
-  // ==============================================================
-  // DOM
-  // ==============================================================
-  const materiGrid = document.getElementById('materiGrid');
-  const materiCountSpan = document.getElementById('materiCount');
-  const mainPage = document.getElementById('mainPage');
-  const detailPage = document.getElementById('detailPage');
-  const detailContent = document.getElementById('detailContent');
-  const backBtn = document.getElementById('backBtn');
-
-  // ==============================================================
-  // RENDER GRID (tanpa filter/search)
-  // ==============================================================
-  function renderMateri() {
-    materiCountSpan.textContent = `${materiData.length} materi`;
-
-    let html = '';
-    materiData.forEach(item => {
-      const kategoriClass = item.kategori;
-      const kategoriLabel = item.kategori.charAt(0).toUpperCase() + item.kategori.slice(1);
-
-      html += `
-        <div class="card-materi" onclick="openDetail(${item.id})">
-          <div class="card-header-icon ${kategoriClass}">
-            <i class="fas ${item.ikon}"></i>
-          </div>
-          <div class="card-body">
-            <span class="badge">${kategoriLabel} · ${item.level}</span>
-            <h4>${item.judul}</h4>
-            <p>${item.deskripsi}</p>
-            <div class="meta-info">
-              <span><i class="fas fa-user"></i> ${item.pengajar}</span>
-              <span class="durasi"><i class="fas fa-clock"></i> ${item.durasi}</span>
-            </div>
-          </div>
-          <div class="card-footer">
-            <button class="btn-materi">
-              <i class="fas fa-play"></i> Mulai belajar
-            </button>
-          </div>
+const emptyAddBg = document.getElementById('emptyAddBg');
+const emptyAddBody = document.getElementById('emptyAddBody');
+const emptyAddClose = document.getElementById('emptyAddClose');
+
+async function openEmptyAddChat() {
+  emptyAddBg.classList.add('open');
+  emptyAddBody.innerHTML = '<div class="empty-add-loading">⏳ Memuat daftar…</div>';
+
+  try {
+    const list = await api('/api/chats/available');
+
+    if (!list.length) {
+      emptyAddBody.innerHTML = `
+        <div style="text-align:center;padding:40px 20px;color:var(--muted)">
+          <div style="font-size:44px;margin-bottom:10px;opacity:0.5">🎉</div>
+          <div style="font-size:13px;font-weight:700;color:var(--blue-dark);margin-bottom:4px">Semua chat udah kamu tambahkan!</div>
+          <div style="font-size:12px">Gak ada yang tersisa di sini.</div>
         </div>
       `;
-    });
+      return;
+    }
 
-    materiGrid.innerHTML = html;
-  }
+    emptyAddBody.innerHTML = '';
 
-  // ==============================================================
-  // OPEN DETAIL
-  // ==============================================================
-  function openDetail(id) {
-    const item = materiData.find(m => m.id === id);
-    if (!item) return;
+    // Public chat dulu
+    const publicChats = list.filter(x => x.isPublic);
+    const dmChats = list.filter(x => !x.isPublic);
 
-    const kategoriLabel = item.kategori.charAt(0).toUpperCase() + item.kategori.slice(1);
-    const konten = item.konten;
+    if (publicChats.length) {
+      const sectionTitle = document.createElement('div');
+      sectionTitle.style.cssText = 'font-size:11.5px;font-weight:800;color:var(--blue-dark);text-transform:uppercase;letter-spacing:0.06em;margin:6px 0 8px;display:flex;align-items:center;gap:6px';
+      sectionTitle.innerHTML = '🌐 Public Chat';
+      emptyAddBody.appendChild(sectionTitle);
 
-    let mediaHtml = '';
-    konten.media.forEach(media => {
-      if (media.tipe === 'image') {
-        mediaHtml += `
-          <div class="media-item">
-            <img src="${media.src}" alt="${media.caption}" onerror="this.src='https://via.placeholder.com/800x450/d8dce4/6b7387?text=Gambar+Materi'">
-            <div class="media-caption"><i class="fas fa-image"></i> ${media.caption}</div>
-          </div>
-        `;
-      } else if (media.tipe === 'video') {
-        mediaHtml += `
-          <div class="media-item">
-            <iframe src="${media.src}" allowfullscreen loading="lazy" title="${media.caption}"></iframe>
-            <div class="media-caption"><i class="fas fa-video"></i> ${media.caption}</div>
-          </div>
-        `;
-      }
-    });
+      publicChats.forEach(item => {
+        emptyAddBody.appendChild(buildAddChatCard(item));
+      });
+    }
 
-    let poinHtml = '';
-    konten.poin.forEach(p => {
-      poinHtml += `<li>${p}</li>`;
-    });
+    if (dmChats.length) {
+      const sectionTitle = document.createElement('div');
+      sectionTitle.style.cssText = 'font-size:11.5px;font-weight:800;color:var(--blue-dark);text-transform:uppercase;letter-spacing:0.06em;margin:14px 0 8px;display:flex;align-items:center;gap:6px';
+      sectionTitle.innerHTML = '👤 User Lain';
+      emptyAddBody.appendChild(sectionTitle);
 
-    detailContent.innerHTML = `
-      <div class="detail-header-card">
-        <div class="detail-top">
-          <div class="detail-icon ${item.kategori}">
-            <i class="fas ${item.ikon}"></i>
-          </div>
-          <div class="detail-titles">
-            <h2>${item.judul}</h2>
-            <div class="detail-tags">
-              <span class="tag">${kategoriLabel}</span>
-              <span class="tag">${item.level}</span>
-              <span class="tag"><i class="fas fa-clock"></i> ${item.durasi}</span>
-              <span class="tag"><i class="fas fa-user"></i> ${item.pengajar}</span>
-            </div>
-          </div>
-        </div>
-        <p class="detail-desc">${item.deskripsi}</p>
-      </div>
+      dmChats.forEach(item => {
+        emptyAddBody.appendChild(buildAddChatCard(item));
+      });
+    }
 
-      <div class="section-block">
-        <h3><i class="fas fa-book-open"></i> Pengantar</h3>
-        <p>${konten.pengantar}</p>
-      </div>
+    // Info footer
+    const footer = document.createElement('div');
+    footer.style.cssText = 'text-align:center;font-size:11.5px;color:var(--muted);padding:14px 8px 4px;line-height:1.55;border-top:1px dashed rgba(255,255,255,0.5);margin-top:12px';
+    footer.innerHTML = '💡 Chat yang udah ditambahkan<br>gak akan muncul di sini lagi';
+    emptyAddBody.appendChild(footer);
 
-      <div class="section-block">
-        <h3><i class="fas fa-list-check"></i> Poin Penting</h3>
-        <ul>${poinHtml}</ul>
-      </div>
-
-      <div class="section-block">
-        <h3><i class="fas fa-lightbulb"></i> Tips Pro</h3>
-        <p>${konten.tips}</p>
-      </div>
-
-      <div class="section-block">
-        <h3><i class="fas fa-photo-video"></i> Media Pembelajaran</h3>
-        <div class="media-grid">${mediaHtml}</div>
+  } catch (e) {
+    emptyAddBody.innerHTML = `
+      <div style="text-align:center;padding:30px;color:#c0392b;font-size:13px">
+        ❌ Gagal memuat: ${escapeHtml(e.message)}
       </div>
     `;
-
-    mainPage.classList.add('hidden');
-    detailPage.classList.add('active');
-    backBtn.style.display = 'flex';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+}
 
-  // ==============================================================
-  // SHOW MAIN (back)
-  // ==============================================================
-  function showMain() {
-    detailPage.classList.remove('active');
-    mainPage.classList.remove('hidden');
-    backBtn.style.display = 'none';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+function buildAddChatCard(item) {
+  const el = document.createElement('div');
+  el.className = 'chat-item';
+  el.style.cursor = 'pointer';
+  el.style.marginBottom = '8px';
 
-  // INIT
-  renderMateri();
-</script>
-</body>
-</html>
+  const avatarTxt = item.isPublic ? '🌐' : (item.name || '?')[0].toUpperCase();
+  const subText = item.subtitle || (item.isPublic ? 'Ngobrol bareng semua user' : 'Chat pribadi');
+
+  el.innerHTML = `
+    <div class="avatar-wrap">
+      <div class="avatar" ${item.isPublic ? 'style="background:linear-gradient(135deg,#2a7fff,#4a8fff);font-size:22px"' : ''}>${avatarTxt}</div>
+    </div>
+    <div class="info">
+      <div class="row1">
+        <h4>${escapeHtml(item.name)}</h4>
+      </div>
+      <div class="row2">
+        <div class="preview">${escapeHtml(subText)}</div>
+        <div class="badges">
+          <span style="background:linear-gradient(135deg,var(--blue),#5aa0ff);color:#fff;font-size:11px;font-weight:800;padding:5px 12px;border-radius:10px;box-shadow:0 3px 10px rgba(42,127,255,.4)">＋ Add</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  el.onclick = async () => {
+    el.style.pointerEvents = 'none';
+    el.style.opacity = '0.6';
+    try {
+      const payload = item.isPublic
+        ? { type: 'group', chatId: item.id }
+        : { type: 'dm', userId: item.userId, chatId: item.id };
+
+      const d = await api('/api/chats/add', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+
+      if (d.error) {
+        alert('Gagal tambah: ' + d.error);
+        el.style.pointerEvents = '';
+        el.style.opacity = '';
+        return;
+      }
+
+      // Refresh modal + chat list
+      await loadChats();
+      // Item ini bakal ilang otomatis karena udah di-add
+      openEmptyAddChat();
+    } catch (e) {
+      alert('Gagal tambah: ' + e.message);
+      el.style.pointerEvents = '';
+      el.style.opacity = '';
+    }
+  };
+
+  return el;
+}
+
+emptyAddClose.onclick = () => emptyAddBg.classList.remove('open');
+emptyAddBg.onclick = (e) => { if (e.target.id === 'emptyAddBg') emptyAddBg.classList.remove('open'); };
