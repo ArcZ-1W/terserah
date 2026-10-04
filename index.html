@@ -1,127 +1,337 @@
-const emptyAddBg = document.getElementById('emptyAddBg');
-const emptyAddBody = document.getElementById('emptyAddBody');
-const emptyAddClose = document.getElementById('emptyAddClose');
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Python Selangkah Demi Selangkah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=JetBrains+Mono:wght@400;600&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef3fa;--card:#fff;--ink:#14213d;--mute:#5b6b86;--line:#d3ddec;--blue:#2f6db5;--blue2:#e2eefb;--gold:#f2c14e;--ok:#1d8a5a;--okbg:#dff4ea;--bad:#c2410c;--badbg:#fde8dc;--code:#14213d;--codeink:#e8eefb;--str:#f2c14e;--kw:#8fc0ff;--cm:#7f8fae;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1626;--card:#16233a;--ink:#e8eefb;--mute:#9bacc9;--line:#26385a;--blue:#6fa8ee;--blue2:#1b2f4f;--okbg:#12362a;--ok:#4fd39a;--badbg:#3a2316;--bad:#ff9a62;--code:#0a111e}}
+:root[data-theme="dark"]{--bg:#0e1626;--card:#16233a;--ink:#e8eefb;--mute:#9bacc9;--line:#26385a;--blue:#6fa8ee;--blue2:#1b2f4f;--okbg:#12362a;--ok:#4fd39a;--badbg:#3a2316;--bad:#ff9a62;--code:#0a111e}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.65 Figtree,system-ui,sans-serif;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:32px 32px;background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;background:var(--bg);opacity:.82;z-index:-1}
+h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;line-height:1.15;margin:0}
+.wrap{max-width:760px;margin:0 auto;padding:20px 18px 80px}
+header{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-bottom:28px}
+.brand{font:800 20px 'Bricolage Grotesque';color:var(--ink);text-decoration:none;display:flex;gap:8px;align-items:center}
+.brand i{display:inline-block;width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--blue) 50%,var(--gold) 50%)}
+.tools{display:flex;gap:8px}
+button,.btn{font:600 15px Figtree,sans-serif;cursor:pointer;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);padding:9px 14px;text-decoration:none;display:inline-block}
+button:focus-visible,a:focus-visible,label:focus-within{outline:3px solid var(--gold);outline-offset:2px}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.pri:disabled{background:var(--line);border-color:var(--line);color:var(--mute);cursor:not-allowed}
+.hero h1{font-size:clamp(34px,8vw,54px);font-weight:800;letter-spacing:-.02em;max-width:14ch}
+.hero p{color:var(--mute);max-width:46ch;margin:14px 0 22px}
+.meter{background:var(--blue2);border-radius:99px;height:12px;overflow:hidden;margin:6px 0 4px}
+.meter b{display:block;height:100%;background:var(--blue);border-radius:99px;transition:width .5s}
+.small{font-size:14px;color:var(--mute)}
+.trail{list-style:none;margin:34px 0 0;padding:0 0 0 30px;position:relative}
+.trail::before{content:"";position:absolute;left:11px;top:10px;bottom:10px;width:3px;background:var(--line);border-radius:3px}
+.trail li{position:relative;margin-bottom:14px}
+.dot{position:absolute;left:-30px;top:20px;width:25px;height:25px;border-radius:50%;background:var(--card);border:3px solid var(--line);display:grid;place-items:center;font-size:12px;font-weight:700}
+.st-open .dot{border-color:var(--blue);background:var(--gold)}
+.st-done .dot{border-color:var(--ok);background:var(--ok);color:#fff}
+.node{display:block;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:16px 18px;text-decoration:none;color:inherit}
+.st-open .node{border-color:var(--blue);box-shadow:0 6px 0 var(--blue2)}
+.st-lock .node{opacity:.55;cursor:not-allowed}
+.node h3{font-size:20px}
+.node span{color:var(--mute);font-size:15px}
+.tag{float:right;font-size:13px;font-weight:600;border-radius:99px;padding:2px 10px;background:var(--blue2);color:var(--blue)}
+.st-done .tag{background:var(--okbg);color:var(--ok)}
+.st-lock .tag{background:var(--line);color:var(--mute)}
+.crumb{color:var(--mute);font-size:15px;margin-bottom:6px}
+.lesson h1{font-size:clamp(30px,7vw,44px);font-weight:800;margin-bottom:6px}
+.lesson h2{font-size:23px;margin:30px 0 8px}
+.lesson p{margin:10px 0;max-width:62ch}
+pre{background:var(--code);color:var(--codeink);border-radius:14px;padding:16px 18px;overflow-x:auto;font:400 15px/1.6 'JetBrains Mono',monospace;margin:14px 0 4px}
+pre .k{color:var(--kw)}pre .s{color:var(--str)}pre .c{color:var(--cm)}
+.out{font:400 14px/1.5 'JetBrains Mono',monospace;border-left:4px solid var(--gold);background:var(--card);padding:8px 14px;border-radius:0 10px 10px 0;margin:0 0 14px}
+code{font:600 .9em 'JetBrains Mono',monospace;background:var(--blue2);padding:1px 6px;border-radius:6px}
+.note{background:var(--blue2);border-radius:12px;padding:12px 16px;margin:16px 0}
+.quiz{margin-top:38px;background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:22px 20px}
+.quiz h2{margin-top:0!important}
+.q{margin:20px 0}
+.q p{font-weight:600;margin:0 0 8px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;margin:6px 0;cursor:pointer}
+.opt input{margin-top:6px;accent-color:var(--blue)}
+.opt.ok{border-color:var(--ok);background:var(--okbg)}
+.opt.bad{border-color:var(--bad);background:var(--badbg)}
+.exp{font-size:15px;color:var(--mute);margin-top:6px}
+.res{margin-top:18px;padding:14px 16px;border-radius:12px;font-weight:600}
+.res.pass{background:var(--okbg);color:var(--ok)}
+.res.fail{background:var(--badbg);color:var(--bad)}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;font-weight:600;font-size:15px;max-width:90vw;z-index:9}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<a class="brand" href="#/"><i></i>PyLangkah</a>
+<div class="tools"><button id="theme" aria-label="Ganti tema">Tema</button><button id="reset">Ulangi dari awal</button></div>
+</header>
+<main id="app"></main>
+</div>
+<script>
+const K=(s)=>`<span class="k">${s}</span>`;
+const L=[
+{t:'Halo, Python!',d:'Menampilkan tulisan dengan print()',
+c:`<p>Python adalah bahasa pemrograman yang dibaca hampir seperti kalimat biasa. Program pertama hampir semua orang sama: menampilkan tulisan di layar dengan fungsi <code>print()</code>.</p>
+<pre><span class="k">print</span>(<span class="s">"Halo, dunia!"</span>)
+<span class="k">print</span>(<span class="s">"Aku belajar Python"</span>)</pre><div class="out">Halo, dunia!<br>Aku belajar Python</div>
+<h2>Teks harus diapit tanda kutip</h2><p>Tulisan (disebut <b>string</b>) diapit tanda kutip dua <code>"..."</code> atau satu <code>'...'</code>. Tanpa kutip, Python mengira itu nama sesuatu dan akan error.</p>
+<h2>Komentar</h2><p>Baris yang diawali <code>#</code> diabaikan Python. Gunakan untuk catatan bagi dirimu sendiri.</p>
+<pre><span class="c"># ini komentar, tidak dijalankan</span>
+<span class="k">print</span>(<span class="s">"Ini dijalankan"</span>)</pre>`,
+q:[{q:'Perintah mana yang menampilkan Halo di layar?',o:['print(Halo)','print("Halo")','tampil "Halo"'],a:1,e:'Teks harus memakai tanda kutip di dalam print().'},
+{q:'Apa fungsi tanda # di awal baris?',o:['Membuat baris menjadi komentar','Menjalankan baris dua kali','Menghapus baris'],a:0,e:'Baris yang diawali # diabaikan oleh Python.'},
+{q:'Apa output dari print("2 + 3")?',o:['5','2 + 3','Error'],a:1,e:'Karena diapit kutip, itu hanya teks dan ditampilkan apa adanya.'}]},
+{t:'Variabel dan Tipe Data',d:'Menyimpan nilai dengan nama',
+c:`<p>Variabel adalah kotak berlabel untuk menyimpan nilai. Buat dengan tanda <code>=</code>.</p>
+<pre>nama = <span class="s">"Sari"</span>
+umur = 17
+tinggi = 1.62
+pelajar = <span class="k">True</span>
+<span class="k">print</span>(nama, umur)</pre><div class="out">Sari 17</div>
+<h2>Empat tipe dasar</h2><p><code>str</code> untuk teks, <code>int</code> untuk bilangan bulat, <code>float</code> untuk bilangan desimal, dan <code>bool</code> untuk benar/salah (<code>True</code> atau <code>False</code>).</p>
+<pre><span class="k">print</span>(<span class="k">type</span>(umur))</pre><div class="out">&lt;class 'int'&gt;</div>
+<div class="note">Aturan nama variabel: tidak boleh diawali angka, tidak boleh ada spasi (pakai <code>nama_depan</code>), dan huruf besar-kecil dibedakan.</div>`,
+q:[{q:'Tipe data dari 3.14 adalah...',o:['int','float','str'],a:1,e:'Bilangan dengan titik desimal bertipe float.'},
+{q:'Nama variabel mana yang valid?',o:['2nama','nama depan','nama_depan'],a:2,e:'Nama tidak boleh diawali angka atau mengandung spasi.'},
+{q:'Setelah x = "7", tipe x adalah...',o:['str','int','bool'],a:0,e:'Karena ada tanda kutip, 7 di sini adalah teks.'}]},
+{t:'Operator dan Perhitungan',d:'Matematika dan membandingkan nilai',
+c:`<p>Python bisa dipakai seperti kalkulator.</p>
+<pre><span class="k">print</span>(7 + 3)   <span class="c"># 10</span>
+<span class="k">print</span>(7 // 2)  <span class="c"># 3  (bagi, dibulatkan ke bawah)</span>
+<span class="k">print</span>(7 % 2)   <span class="c"># 1  (sisa bagi)</span>
+<span class="k">print</span>(2 ** 3)  <span class="c"># 8  (pangkat)</span></pre>
+<h2>Operator perbandingan</h2><p>Hasilnya selalu <code>True</code> atau <code>False</code>: <code>==</code> (sama dengan), <code>!=</code> (tidak sama), <code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code>.</p>
+<pre><span class="k">print</span>(5 == 5)
+<span class="k">print</span>(5 != 5)</pre><div class="out">True<br>False</div>
+<div class="note">Satu tanda <code>=</code> berarti <b>menyimpan</b> nilai. Dua tanda <code>==</code> berarti <b>membandingkan</b>.</div>`,
+q:[{q:'Hasil dari 10 % 3 adalah...',o:['3','1','0'],a:1,e:'10 dibagi 3 bersisa 1.'},
+{q:'Hasil dari 2 ** 4 adalah...',o:['8','6','16'],a:2,e:'Dua pangkat empat sama dengan 16.'},
+{q:'Untuk membandingkan dua nilai sama atau tidak, gunakan...',o:['=','==','=>'],a:1,e:'== membandingkan, sedangkan = menyimpan.'}]},
+{t:'Percabangan if',d:'Mengambil keputusan dalam program',
+c:`<p>Program bisa memilih jalan sesuai kondisi memakai <code>if</code>, <code>elif</code>, dan <code>else</code>. Perhatikan titik dua dan <b>indentasi</b> (menjorok 4 spasi): itulah cara Python menandai isi blok.</p>
+<pre>nilai = 78
+<span class="k">if</span> nilai &gt;= 85:
+    <span class="k">print</span>(<span class="s">"A"</span>)
+<span class="k">elif</span> nilai &gt;= 70:
+    <span class="k">print</span>(<span class="s">"B"</span>)
+<span class="k">else</span>:
+    <span class="k">print</span>(<span class="s">"Perlu belajar lagi"</span>)</pre><div class="out">B</div>
+<p>Python memeriksa dari atas dan berhenti di kondisi pertama yang benar. Kondisi bisa digabung dengan <code>and</code>, <code>or</code>, dan <code>not</code>.</p>`,
+q:[{q:'Apa yang wajib ada di akhir baris if?',o:['Titik koma ;','Titik dua :','Tanda seru !'],a:1,e:'Baris if, elif, dan else selalu diakhiri titik dua.'},
+{q:'Jika nilai = 90, output kode di atas adalah...',o:['A','B','Perlu belajar lagi'],a:0,e:'90 >= 85 benar, jadi cabang pertama berjalan.'},
+{q:'Python menentukan isi blok if dengan...',o:['Kurung kurawal { }','Indentasi','Kata end'],a:1,e:'Indentasi menentukan baris mana yang masuk blok.'}]},
+{t:'Perulangan',d:'Mengulang tugas dengan for dan while',
+c:`<p>Perulangan menjalankan kode berkali-kali tanpa menulisnya berulang.</p>
+<h2>for: jumlah ulangan sudah diketahui</h2>
+<pre><span class="k">for</span> i <span class="k">in</span> <span class="k">range</span>(3):
+    <span class="k">print</span>(<span class="s">"Ulangan ke"</span>, i)</pre><div class="out">Ulangan ke 0<br>Ulangan ke 1<br>Ulangan ke 2</div>
+<p><code>range(3)</code> menghasilkan 0, 1, 2. Hitungan dimulai dari 0 dan berhenti sebelum angka 3.</p>
+<h2>while: ulangi selama kondisi benar</h2>
+<pre>n = 3
+<span class="k">while</span> n &gt; 0:
+    <span class="k">print</span>(n)
+    n = n - 1</pre><div class="out">3<br>2<br>1</div>
+<div class="note">Pastikan kondisi while suatu saat menjadi salah. Kalau tidak, program berputar tanpa henti.</div>`,
+q:[{q:'range(4) menghasilkan angka...',o:['1, 2, 3, 4','0, 1, 2, 3','0, 1, 2, 3, 4'],a:1,e:'range mulai dari 0 dan berhenti sebelum angka batas.'},
+{q:'Kapan while berhenti?',o:['Saat kondisinya menjadi False','Setelah 10 kali','Tidak pernah'],a:0,e:'while terus berjalan selama kondisinya True.'},
+{q:'Berapa kali "Hai" tampil pada for i in range(5): print("Hai")?',o:['4','5','6'],a:1,e:'range(5) menghasilkan lima nilai, jadi lima kali.'}]},
+{t:'Fungsi',d:'Membungkus kode agar bisa dipakai ulang',
+c:`<p>Fungsi adalah kumpulan perintah yang diberi nama. Buat dengan <code>def</code>, lalu panggil kapan saja.</p>
+<pre><span class="k">def</span> sapa(nama):
+    <span class="k">return</span> <span class="s">"Halo, "</span> + nama + <span class="s">"!"</span>
 
-async function openEmptyAddChat() {
-  emptyAddBg.classList.add('open');
-  emptyAddBody.innerHTML = '<div class="empty-add-loading">⏳ Memuat daftar…</div>';
+<span class="k">print</span>(sapa(<span class="s">"Budi"</span>))
+<span class="k">print</span>(sapa(<span class="s">"Ani"</span>))</pre><div class="out">Halo, Budi!<br>Halo, Ani!</div>
+<p><code>nama</code> disebut <b>parameter</b>, yaitu data masukan fungsi. <code>return</code> mengirim hasil kembali ke tempat fungsi dipanggil.</p>
+<pre><span class="k">def</span> luas_persegi(sisi):
+    <span class="k">return</span> sisi * sisi
 
-  try {
-    const list = await api('/api/chats/available');
+hasil = luas_persegi(5)
+<span class="k">print</span>(hasil)</pre><div class="out">25</div>
+`,
+q:[{q:'Kata kunci untuk membuat fungsi adalah...',o:['func','def','function'],a:1,e:'Python memakai def.'},
+{q:'Apa tugas return?',o:['Menghentikan Python','Mengirim hasil keluar dari fungsi','Mencetak ke layar'],a:1,e:'return mengembalikan nilai ke pemanggil fungsi.'},
+{q:'Hasil luas_persegi(4) pada contoh di atas adalah...',o:['8','16','4'],a:1,e:'4 * 4 = 16.'}]},
+{t:'List (Daftar)',d:'Menyimpan banyak nilai sekaligus',
+c:`<p>List menyimpan banyak nilai dalam satu variabel, ditulis di dalam kurung siku. Urutan dihitung dari <b>0</b>.</p>
+<pre>buah = ["apel", "jeruk", "mangga"]
+print(buah[0])
+buah.append("pisang")
+print(len(buah))
+for b in buah:
+    print(b)</pre><div class="out">apel<br>4<br>apel<br>jeruk<br>mangga<br>pisang</div>
+<p><code>append()</code> menambah item di akhir, <code>len()</code> menghitung jumlah item, dan <code>buah[-1]</code> mengambil item terakhir. Kamu juga bisa menghapus dengan <code>buah.pop(0)</code> (hapus item pada indeks 0).</p>`,
+q:[{q:'Item pertama sebuah list ada di indeks...',o:['0','1','-1'],a:0,e:'Indeks dimulai dari 0.'},
+{q:'Cara menambah item di akhir list?',o:['list.add(x)','list.append(x)','list.push(x)'],a:1,e:'Python memakai append().'},
+{q:'len(["a","b","c"]) bernilai...',o:['2','3','4'],a:1,e:'Ada tiga item.'}]},
+{t:'Dictionary',d:'Data berpasangan kunci dan nilai',
+c:`<p>Dictionary menyimpan data dalam pasangan <b>kunci: nilai</b>, cocok untuk data yang punya label.</p>
+<pre>siswa = {"nama": "Sari", "umur": 17}
+print(siswa["nama"])
+siswa["kelas"] = "XI"
+for kunci, nilai in siswa.items():
+    print(kunci, "=", nilai)</pre><div class="out">Sari<br>nama = Sari<br>umur = 17<br>kelas = XI</div>
+<p>Mengisi kunci yang belum ada akan menambahkannya, mengisi kunci yang sudah ada akan mengubah nilainya. Mengambil kunci yang tidak ada menyebabkan error, jadi gunakan <code>siswa.get("alamat")</code> kalau belum yakin.</p>`,
+q:[{q:'Dictionary menyimpan data dalam bentuk...',o:['Pasangan kunci dan nilai','Hanya angka','Urutan indeks saja'],a:0,e:'Setiap item punya kunci dan nilai.'},
+{q:'Cara mengambil nilai dari siswa dengan kunci "nama"?',o:['siswa(nama)','siswa["nama"]','siswa.nama()'],a:1,e:'Gunakan kurung siku dengan kuncinya.'},
+{q:'Apa yang terjadi pada siswa["umur"] = 18 jika "umur" sudah ada?',o:['Error','Nilainya diubah menjadi 18','Dibuat kunci kedua'],a:1,e:'Kunci yang sama hanya diperbarui.'}]},
+{t:'Input dan f-string',d:'Membuat program yang berinteraksi',
+c:`<p><code>input()</code> menanyakan sesuatu kepada pengguna dan mengembalikan jawabannya.</p>
+<pre>nama = input("Siapa namamu? ")
+umur = int(input("Umurmu? "))
+print(f"Halo, {nama}! Tahun depan umurmu {umur + 1}.")</pre><div class="out">Siapa namamu? Budi<br>Umurmu? 16<br>Halo, Budi! Tahun depan umurmu 17.</div>
+<div class="note"><code>input()</code> <b>selalu</b> menghasilkan teks (str). Ubah dulu dengan <code>int()</code> atau <code>float()</code> sebelum menghitung.</div>
+<p>String berawalan <code>f</code> (f-string) membolehkan kamu menaruh variabel atau hitungan di dalam <code>{ }</code>.</p>`,
+q:[{q:'Tipe data hasil input() adalah...',o:['int','str','Tergantung yang diketik'],a:1,e:'input() selalu mengembalikan str.'},
+{q:'Agar jawaban "5" bisa dijumlah, gunakan...',o:['int(input())','str(input())','print(input())'],a:0,e:'int() mengubah teks menjadi bilangan bulat.'},
+{q:'Dengan nama = "Ani", f"Hai {nama}" menghasilkan...',o:['Hai {nama}','Hai Ani','Hai nama'],a:1,e:'Isi kurung kurawal diganti nilai variabelnya.'}]},
+{t:'Error dan Modul',d:'try/except dan library bawaan',
+c:`<p>Pengguna kadang mengetik hal yang tidak terduga. <code>try</code> dan <code>except</code> menangkap error agar program tidak berhenti mendadak.</p>
+<pre>try:
+    angka = int(input("Angka: "))
+    print(angka * 2)
+except ValueError:
+    print("Itu bukan angka!")</pre><div class="out">Angka: abc<br>Itu bukan angka!</div>
+<h2>Modul</h2><p>Python punya banyak kode siap pakai yang dipanggil dengan <code>import</code>. Contoh modul <code>random</code>:</p>
+<pre>import random
+print(random.randint(1, 6))</pre><div class="out">4</div>
+<p><code>randint(1, 6)</code> memilih bilangan bulat acak dari 1 sampai 6, <b>termasuk</b> keduanya.</p>`,
+q:[{q:'Blok except berjalan ketika...',o:['Selalu','Terjadi error di blok try','Program selesai'],a:1,e:'except hanya jalan jika try menimbulkan error.'},
+{q:'Cara memakai modul random?',o:['use random','import random','include random'],a:1,e:'Gunakan import.'},
+{q:'random.randint(1, 3) bisa menghasilkan...',o:['1, 2, atau 3','Hanya 2','1 atau 2 saja'],a:0,e:'Kedua batas ikut termasuk.'}]},
+{t:'Proyek 1: Tebak Angka',d:'Game pertamamu dari semua materi tadi',
+c:`<p>Saatnya menggabungkan semuanya. Komputer memilih angka rahasia, dan pemain menebak sampai benar. Simpan sebagai <code>tebak.py</code>, lalu jalankan dengan <code>python tebak.py</code> di terminal.</p>
+<pre>import random
 
-    if (!list.length) {
-      emptyAddBody.innerHTML = `
-        <div style="text-align:center;padding:40px 20px;color:var(--muted)">
-          <div style="font-size:44px;margin-bottom:10px;opacity:0.5">🎉</div>
-          <div style="font-size:13px;font-weight:700;color:var(--blue-dark);margin-bottom:4px">Semua chat udah kamu tambahkan!</div>
-          <div style="font-size:12px">Gak ada yang tersisa di sini.</div>
-        </div>
-      `;
-      return;
-    }
+rahasia = random.randint(1, 20)
+percobaan = 0
+print("Tebak angka 1 sampai 20!")
 
-    emptyAddBody.innerHTML = '';
+while True:
+    try:
+        tebakan = int(input("Tebakanmu: "))
+    except ValueError:
+        print("Masukkan angka ya.")
+        continue
+    percobaan += 1
+    if tebakan < rahasia:
+        print("Terlalu kecil")
+    elif tebakan > rahasia:
+        print("Terlalu besar")
+    else:
+        print(f"Benar! Kamu butuh {percobaan} percobaan.")
+        break</pre>
+<h2>Cara kerjanya</h2>
+<p><b>1.</b> <code>random</code> memilih angka rahasia. <b>2.</b> <code>while True</code> membuat perulangan tanpa henti sampai ada <code>break</code>. <b>3.</b> <code>try/except</code> menjaga program dari ketikan huruf, dan <code>continue</code> melompat ke putaran berikutnya. <b>4.</b> <code>percobaan += 1</code> adalah singkatan dari <code>percobaan = percobaan + 1</code>. <b>5.</b> <code>if/elif/else</code> memberi petunjuk, dan jawaban benar mengakhiri game dengan <code>break</code>.</p>
+<div class="note"><b>Tantangan:</b> batasi pemain hanya 5 percobaan, atau biarkan pemain memilih rentang angka sendiri.</div>`,
+q:[{q:'Apa fungsi break pada kode ini?',o:['Melewati satu putaran','Menghentikan perulangan','Menghapus variabel'],a:1,e:'break keluar dari while saat tebakan benar.'},
+{q:'percobaan += 1 sama dengan...',o:['percobaan = 1','percobaan = percobaan + 1','percobaan == 1'],a:1,e:'+= menambah nilai variabel itu sendiri.'},
+{q:'Apa yang dilakukan continue saat pemain mengetik huruf?',o:['Menutup program','Lompat ke putaran berikutnya','Menghitung sebagai percobaan'],a:1,e:'Kode setelah continue dilewati, termasuk percobaan += 1.'}]},
+{t:'Proyek 2: Daftar Tugas',d:'Aplikasi menu dengan list dan fungsi',
+c:`<p>Proyek kedua: aplikasi daftar tugas dengan menu. Proyek ini memakai list, fungsi, input, dan perulangan sekaligus. Simpan sebagai <code>tugas.py</code>.</p>
+<pre>tugas = []
 
-    // Public chat dulu
-    const publicChats = list.filter(x => x.isPublic);
-    const dmChats = list.filter(x => !x.isPublic);
+def tampilkan():
+    if not tugas:
+        print("Belum ada tugas.")
+    for i, t in enumerate(tugas, 1):
+        print(f"{i}. {t}")
 
-    if (publicChats.length) {
-      const sectionTitle = document.createElement('div');
-      sectionTitle.style.cssText = 'font-size:11.5px;font-weight:800;color:var(--blue-dark);text-transform:uppercase;letter-spacing:0.06em;margin:6px 0 8px;display:flex;align-items:center;gap:6px';
-      sectionTitle.innerHTML = '🌐 Public Chat';
-      emptyAddBody.appendChild(sectionTitle);
+while True:
+    print("--- Menu ---")
+    print("1) Lihat  2) Tambah  3) Hapus  4) Keluar")
+    pilih = input("Pilih: ")
+    if pilih == "1":
+        tampilkan()
+    elif pilih == "2":
+        tugas.append(input("Tugas baru: "))
+    elif pilih == "3":
+        tampilkan()
+        nomor = int(input("Nomor yang dihapus: "))
+        tugas.pop(nomor - 1)
+    elif pilih == "4":
+        print("Sampai jumpa!")
+        break</pre>
+<h2>Hal baru di sini</h2>
+<p><code>if not tugas</code> bernilai benar saat list kosong. <code>enumerate(tugas, 1)</code> memberi nomor urut yang dimulai dari 1 pada tiap item. Saat menghapus, nomor yang dilihat pengguna dikurangi 1 karena indeks list dimulai dari 0.</p>
+<div class="note"><b>Tantangan:</b> tangkap error saat pengguna memasukkan nomor yang salah, atau simpan tugas ke file. Selamat, kamu sudah menamatkan semua materi! Ide proyek berikutnya: kalkulator, kuis pilihan ganda, atau pencatat pengeluaran.</div>`,
+q:[{q:'Mengapa memakai tugas.pop(nomor - 1)?',o:['Indeks list dimulai dari 0','Agar tugas bertambah','Supaya input jadi teks'],a:0,e:'Nomor tampilan mulai dari 1, indeks mulai dari 0.'},
+{q:'Kapan "if not tugas" bernilai benar?',o:['Saat list kosong','Saat list berisi tugas','Selalu'],a:0,e:'List kosong dianggap False, jadi not membuatnya True.'},
+{q:'Mengapa tampilkan() dibuat sebagai fungsi?',o:['Agar kode bisa dipakai di beberapa tempat','Agar program lebih lambat','Wajib oleh Python'],a:0,e:'Fungsi dipanggil di menu Lihat dan Hapus tanpa menulis ulang.'}]}
+];
+const PASS=2, KEY='pylangkah-progress-v1';
+let done=[];
+try{done=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){done=[]}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(done))}catch(e){}};
+const unlocked=i=>i===0||done.includes(i-1);
+const $=s=>document.querySelector(s);
+const app=$('#app');
+function toast(m){const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2800)}
 
-      publicChats.forEach(item => {
-        emptyAddBody.appendChild(buildAddChatCard(item));
-      });
-    }
-
-    if (dmChats.length) {
-      const sectionTitle = document.createElement('div');
-      sectionTitle.style.cssText = 'font-size:11.5px;font-weight:800;color:var(--blue-dark);text-transform:uppercase;letter-spacing:0.06em;margin:14px 0 8px;display:flex;align-items:center;gap:6px';
-      sectionTitle.innerHTML = '👤 User Lain';
-      emptyAddBody.appendChild(sectionTitle);
-
-      dmChats.forEach(item => {
-        emptyAddBody.appendChild(buildAddChatCard(item));
-      });
-    }
-
-    // Info footer
-    const footer = document.createElement('div');
-    footer.style.cssText = 'text-align:center;font-size:11.5px;color:var(--muted);padding:14px 8px 4px;line-height:1.55;border-top:1px dashed rgba(255,255,255,0.5);margin-top:12px';
-    footer.innerHTML = '💡 Chat yang udah ditambahkan<br>gak akan muncul di sini lagi';
-    emptyAddBody.appendChild(footer);
-
-  } catch (e) {
-    emptyAddBody.innerHTML = `
-      <div style="text-align:center;padding:30px;color:#c0392b;font-size:13px">
-        ❌ Gagal memuat: ${escapeHtml(e.message)}
-      </div>
-    `;
-  }
+function home(){
+ const pct=Math.round(done.length/L.length*100);
+ const next=L.findIndex((_,i)=>!done.includes(i));
+ app.innerHTML=`<section class="hero"><h1>Belajar Python, satu langkah dalam satu waktu.</h1>
+ <p>${L.length} materi untuk pemula, dari <code>print()</code> sampai dua proyek pertamamu. Setiap materi punya kuis. Lulus kuis (minimal ${PASS} dari 3 benar) untuk membuka materi berikutnya.</p>
+ ${next===-1?'<a class="btn pri" href="#/">Kursus selesai, kerja bagus!</a>':`<a class="btn pri" href="#/l/${next}">${done.length?'Lanjutkan belajar':'Mulai dari materi 1'}</a>`}
+ <div class="meter" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><b style="width:${pct}%"></b></div>
+ <div class="small">${done.length} dari ${L.length} materi selesai</div></section>
+ <ol class="trail">${L.map((l,i)=>{const d=done.includes(i),o=unlocked(i);const cls=d?'st-done':o?'st-open':'st-lock';
+ return `<li class="${cls}"><div class="dot">${d?'✓':o?i+1:'🔒'}</div><a class="node" href="#/l/${i}" data-i="${i}"><span class="tag">${d?'Selesai':o?'Terbuka':'Terkunci'}</span><h3>${l.t}</h3><span>${o?l.d:'Selesaikan materi '+i+' untuk membuka'}</span></a></li>`}).join('')}</ol>`;
+ app.querySelectorAll('.st-lock a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();toast('Materi ini terkunci. Lulus kuis materi sebelumnya dulu.')}));
 }
 
-function buildAddChatCard(item) {
-  const el = document.createElement('div');
-  el.className = 'chat-item';
-  el.style.cursor = 'pointer';
-  el.style.marginBottom = '8px';
-
-  const avatarTxt = item.isPublic ? '🌐' : (item.name || '?')[0].toUpperCase();
-  const subText = item.subtitle || (item.isPublic ? 'Ngobrol bareng semua user' : 'Chat pribadi');
-
-  el.innerHTML = `
-    <div class="avatar-wrap">
-      <div class="avatar" ${item.isPublic ? 'style="background:linear-gradient(135deg,#2a7fff,#4a8fff);font-size:22px"' : ''}>${avatarTxt}</div>
-    </div>
-    <div class="info">
-      <div class="row1">
-        <h4>${escapeHtml(item.name)}</h4>
-      </div>
-      <div class="row2">
-        <div class="preview">${escapeHtml(subText)}</div>
-        <div class="badges">
-          <span style="background:linear-gradient(135deg,var(--blue),#5aa0ff);color:#fff;font-size:11px;font-weight:800;padding:5px 12px;border-radius:10px;box-shadow:0 3px 10px rgba(42,127,255,.4)">＋ Add</span>
-        </div>
-      </div>
-    </div>
-  `;
-
-  el.onclick = async () => {
-    el.style.pointerEvents = 'none';
-    el.style.opacity = '0.6';
-    try {
-      const payload = item.isPublic
-        ? { type: 'group', chatId: item.id }
-        : { type: 'dm', userId: item.userId, chatId: item.id };
-
-      const d = await api('/api/chats/add', {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
-
-      if (d.error) {
-        alert('Gagal tambah: ' + d.error);
-        el.style.pointerEvents = '';
-        el.style.opacity = '';
-        return;
-      }
-
-      // Refresh modal + chat list
-      await loadChats();
-      // Item ini bakal ilang otomatis karena udah di-add
-      openEmptyAddChat();
-    } catch (e) {
-      alert('Gagal tambah: ' + e.message);
-      el.style.pointerEvents = '';
-      el.style.opacity = '';
-    }
-  };
-
-  return el;
+function lesson(i){
+ const l=L[i];let ans={};
+ app.innerHTML=`<article class="lesson"><div class="crumb"><a href="#/">Peta materi</a> / Materi ${i+1} dari ${L.length}</div>
+ <h1>${l.t}</h1><div class="small">${l.d}</div>${l.c}
+ <section class="quiz"><h2>Kuis: buktikan kamu paham</h2><p class="small">Jawab semua soal. Minimal ${PASS} dari ${l.q.length} benar untuk lulus.</p>
+ <div id="qs">${l.q.map((q,qi)=>`<div class="q" data-q="${qi}"><p>${qi+1}. ${q.q}</p>${q.o.map((o,oi)=>`<label class="opt"><input type="radio" name="q${qi}" value="${oi}"><span>${o}</span></label>`).join('')}<div class="exp" hidden>${q.e}</div></div>`).join('')}</div>
+ <div class="actions"><button class="btn pri" id="chk">Periksa jawaban</button></div><div id="res"></div></section>
+ <div class="actions"><a class="btn" href="${i?'#/l/'+(i-1):'#/'}">${i?'Materi sebelumnya':'Kembali ke peta'}</a></div></article>`;
+ app.querySelectorAll('pre').forEach(p=>{if(p.querySelector('span'))return;
+  p.innerHTML=p.innerHTML.replace(/(#[^\n]*)|("[^"\n]*"|'[^'\n]*')|\b(def|if|elif|else|for|while|in|return|import|try|except|print|input|int|len|range|True|False|break|continue|not|enumerate)\b/g,(m,c,s,k)=>c?`<span class="c">${m}</span>`:s?`<span class="s">${m}</span>`:`<span class="k">${m}</span>`)});
+ window.scrollTo(0,0);
+ $('#chk').onclick=()=>{
+  let sc=0,miss=false;
+  l.q.forEach((q,qi)=>{const sel=app.querySelector(`input[name=q${qi}]:checked`);if(!sel){miss=true;return}});
+  if(miss){toast('Jawab semua soal dulu ya.');return}
+  l.q.forEach((q,qi)=>{const box=app.querySelector(`[data-q="${qi}"]`);const v=+app.querySelector(`input[name=q${qi}]:checked`).value;
+   box.querySelectorAll('.opt').forEach((lb,oi)=>{lb.classList.remove('ok','bad');if(oi===q.a)lb.classList.add('ok');else if(oi===v)lb.classList.add('bad')});
+   box.querySelector('.exp').hidden=false;if(v===q.a)sc++});
+  const ok=sc>=PASS;const r=$('#res');
+  if(ok){if(!done.includes(i)){done.push(i);save()}
+   const last=i===L.length-1;
+   r.innerHTML=`<div class="res pass">Lulus! Skor ${sc}/${l.q.length}. ${last?'Kamu menamatkan semua materi.':'Materi '+(i+2)+' sekarang terbuka.'}</div><div class="actions"><a class="btn pri" href="${last?'#/':'#/l/'+(i+1)}">${last?'Kembali ke peta':'Lanjut ke materi '+(i+2)}</a></div>`}
+  else r.innerHTML=`<div class="res fail">Skor ${sc}/${l.q.length}. Belum lulus. Baca materi di atas lagi, lalu coba kembali.</div><div class="actions"><button id="retry">Coba lagi</button></div>`;
+  const rt=$('#retry');if(rt)rt.onclick=()=>lesson(i);
+  r.scrollIntoView({behavior:'smooth',block:'center'});
+ };
 }
 
-emptyAddClose.onclick = () => emptyAddBg.classList.remove('open');
-emptyAddBg.onclick = (e) => { if (e.target.id === 'emptyAddBg') emptyAddBg.classList.remove('open'); };
+function route(){
+ const m=location.hash.match(/^#\/l\/(\d+)$/);
+ if(m){const i=+m[1];
+  if(i>=L.length)return location.hash='#/';
+  if(!unlocked(i)){toast('Materi ini terkunci. Selesaikan materi sebelumnya dulu.');return location.hash='#/'}
+  return lesson(i)}
+ home();window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+$('#reset').onclick=()=>{if(confirm('Hapus semua progres dan mulai dari awal?')){done=[];save();location.hash='#/';route();toast('Progres direset.')}};
+$('#theme').onclick=()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.dataset.theme=dark?'light':'dark'};
+route();
+</script>
+</body>
+</html>
