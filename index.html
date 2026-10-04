@@ -122,6 +122,18 @@ header{flex-wrap:wrap}.tools{flex-wrap:wrap;justify-content:flex-end}
 .sq{aspect-ratio:1;display:grid;place-items:center;font-size:clamp(18px,6vw,26px);border-radius:8px;background:var(--blue2)}
 .sq.w{background:var(--line)}.sq.g{background:var(--okbg)}.sq.me{background:var(--gold)}
 .outbox .ok{color:var(--ok);font-weight:600}
+.tools .btn,.tools button{padding:7px 12px;font-size:14px}
+.tools .ic{width:38px;height:38px;padding:0;display:grid;place-items:center}
+.tools .warn{color:var(--bad);border-color:var(--bad);background:transparent}
+.tools .danger{background:#d62f2f;border-color:#d62f2f;color:#fff}
+.sq{position:relative}
+.sq.me.dead{background:var(--badbg)}
+.bm{display:block;position:relative;z-index:3;animation:boom .9s ease-out forwards}
+@keyframes boom{0%{transform:scale(.3);opacity:1}35%{transform:scale(1.9);opacity:1}100%{transform:scale(2.4);opacity:0}}
+.ring{position:absolute;inset:0;border:3px solid var(--bad);border-radius:50%;opacity:0;pointer-events:none;z-index:2;animation:ringo .8s ease-out forwards}
+.ring.r1{animation-delay:.05s}.ring.r2{animation-delay:.3s;border-color:var(--gold)}.ring.r3{animation-delay:.55s}
+@keyframes ringo{0%{transform:scale(.3);opacity:.95}100%{transform:scale(3.6);opacity:0}}
+@media (prefers-reduced-motion:reduce){.ring{display:none}.bm{animation:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -129,7 +141,7 @@ header{flex-wrap:wrap}.tools{flex-wrap:wrap;justify-content:flex-end}
 <div class="wrap">
 <header>
 <a class="brand" href="#/"><i></i>PyLangkah</a>
-<div class="tools"><a class="btn" href="#/games">Games</a><a class="btn" href="#/lab">Lab Kode</a><button id="theme" aria-label="Ganti tema">Tema</button><button id="reset">Ulangi dari awal</button><button id="logout">Keluar</button></div>
+<div class="tools"><a class="btn" href="#/games">Games</a><a class="btn" href="#/lab">Lab Kode</a><button id="theme" class="ic" aria-label="Ganti tema"></button><button id="reset" class="warn">Ulangi dari awal</button><button id="logout" class="danger">Keluar</button></div>
 </header>
 <main id="app"></main>
 </div>
@@ -461,7 +473,7 @@ function drawCells(){
  const box=$('#cells');box.innerHTML='';
  cells.forEach((code,i)=>{
   const c=document.createElement('div');c.className='cell';
-  c.innerHTML=`<textarea spellcheck="false" aria-label="Sel kode ${i+1}"></textarea><div class="crow"><button class="btn pri run">Jalankan</button><button class="clr">Hapus output</button><button class="aibtn ai-e">Jelaskan (AI)</button><button class="aibtn ai-f">Perbaiki (AI)</button><span class="sp"></span><button class="del">Hapus sel</button></div><div class="outbox" role="log" aria-live="polite"></div>`;
+  c.innerHTML=`<textarea spellcheck="false" aria-label="Sel kode ${i+1}"></textarea><div class="crow"><button class="btn pri run">Jalankan</button><button class="clr">Hapus output</button><span class="sp"></span><button class="del">Hapus sel</button></div><div class="outbox" role="log" aria-live="polite"></div>`;
   const ta=c.querySelector('textarea'),out=c.querySelector('.outbox'),run=c.querySelector('.run');
   ta.value=code;
   const fit=()=>{ta.style.height='auto';ta.style.height=Math.max(96,ta.scrollHeight)+'px'};
@@ -471,8 +483,6 @@ function drawCells(){
    else if(e.key==='Enter'&&(e.ctrlKey||e.metaKey||e.shiftKey)){e.preventDefault();if(!run.disabled)runCell(i,out,run)}
    else if(e.key==='Enter'&&ta.selectionStart===ta.selectionEnd){e.preventDefault();const v=ta.value,s=ta.selectionStart,ln=v.slice(v.lastIndexOf('\n',s-1)+1,s);ta.setRangeText('\n'+ln.match(/^ */)[0]+(ln.trimEnd().endsWith(':')?'    ':''),s,s,'end');ta.dispatchEvent(new Event('input'))}});
   ta.addEventListener('focus',()=>{lastTa=ta});
-  c.querySelector('.ai-e').onclick=()=>askAI('Jelaskan kode Python ini baris demi baris dengan bahasa sederhana untuk pemula:\n```python\n'+ta.value+'\n```');
-  c.querySelector('.ai-f').onclick=()=>askAI('Kodeku bermasalah atau hasilnya tidak sesuai harapan. Tolong cari penyebabnya dan tunjukkan perbaikannya.\n```python\n'+ta.value+'\n```\nOutput atau error:\n'+(out.textContent.trim()||'(belum dijalankan)'));
   run.onclick=()=>runCell(i,out,run);
   c.querySelector('.clr').onclick=()=>{out.textContent=''};
   c.querySelector('.del').onclick=()=>{if(cells.length===1&&!cells[0].trim())return toast('Sel terakhir tidak bisa dihapus.');cells.splice(i,1);if(!cells.length)cells.push('');saveCells();drawCells()};
@@ -581,7 +591,7 @@ function drawBoard(){
  const b=$('#board');if(!b)return;
  b.style.gridTemplateColumns=`repeat(${G.n},1fr)`;let h='';
  for(let r=0;r<G.n;r++)for(let c=0;c<G.n;c++){const me=G.pos[0]===r&&G.pos[1]===c,g=G.go[0]===r&&G.go[1]===c,w=G.walls.has(r+','+c);
-  h+=`<div class="sq${w?' w':''}${g?' g':''}${me?' me':''}">${me?'🤖':g?'🏁':w?'🧱':''}</div>`}
+  const bm=me&&G.dead;h+=`<div class="sq${w?' w':''}${g?' g':''}${me?' me':''}${bm?' dead':''}">${bm?'<span class="bm">💥</span><i class="ring r1"></i><i class="ring r2"></i><i class="ring r3"></i>':me?'🤖':g?'🏁':w?'🧱':''}</div>`}
  b.innerHTML=h;
  $('#ginfo').textContent='Jalur terpendek: '+G.len+' perintah. Total menang: '+wins;
 }
@@ -596,18 +606,18 @@ function games(){
 function gameMove(){
  gRun++;newGame();
  app.innerHTML=`<div class="lesson"><div class="crumb"><a href="#/games">Games</a> / Antar Robot</div><h1>Antar Robot</h1>
- <p>Gerakkan 🤖 ke 🏁 dengan perintah <code>print()</code>. Tulis <code>print("kanan")</code> untuk melangkah satu petak. Perintah yang ada: <code>atas</code>, <code>bawah</code>, <code>kiri</code>, <code>kanan</code>. Tembok 🧱 dan tepi papan menghalangi.</p>
+ <p>Gerakkan 🤖 ke 🏁 dengan perintah <code>print()</code>. Tulis <code>print("kanan")</code> untuk melangkah satu petak. Perintah yang ada: <code>atas</code>, <code>bawah</code>, <code>kiri</code>, <code>kanan</code>. Kalau menabrak tembok 🧱 atau tepi papan, robot meledak 💥.</p>
  <div id="board" class="board" role="img" aria-label="Papan permainan"></div><div class="small" id="ginfo"></div>
- <div class="chips" id="gch"></div>
  <div class="cell"><textarea id="gcode" spellcheck="false" aria-label="Kode game"></textarea><div class="crow"><button class="btn pri" id="grun">Jalankan</button><button id="greset">Reset posisi</button><span class="sp"></span><button id="gnew">Game baru (acak)</button></div><div class="outbox" id="gmsg" role="status" aria-live="polite"></div></div>
  <div class="note">Tips: pakai perulangan agar kodenya singkat, misalnya <code>for i in range(3):</code> lalu <code>print("kanan")</code> dengan indentasi.</div></div>`;
  const ta=$('#gcode');
  ta.value='# Gerakkan robot ke bendera\nprint("kanan")\n';
  const fit=()=>{ta.style.height='auto';ta.style.height=Math.max(140,ta.scrollHeight)+'px'};
  ta.addEventListener('input',fit);fit();
- const resetPos=()=>{gRun++;G.pos=G.st.slice();G.moves=0;drawBoard();gmsg('')};
+ const resetPos=()=>{gRun++;G.pos=G.st.slice();G.moves=0;G.dead=false;drawBoard();gmsg('')};
+ const fail=m=>{G.dead=true;drawBoard();gmsg(m,'er')};
  async function play(){
-  const my=++gRun;G.pos=G.st.slice();G.moves=0;drawBoard();gmsg('Menjalankan kode...','mute');
+  const my=++gRun;G.pos=G.st.slice();G.moves=0;G.dead=false;drawBoard();gmsg('Menjalankan kode...','mute');
   let r;try{r=await runPy(ta.value)}catch(e){gmsg('Mesin Python gagal dimuat. Periksa koneksi internet lalu muat ulang halaman.','er');return}
   if(my!==gRun)return;
   const cmds=r.out.split('\n').map(x=>x.trim().toLowerCase()).filter(Boolean);
@@ -616,24 +626,20 @@ function gameMove(){
   gmsg('');
   for(let k=0;k<cmds.length;k++){
    const d=D[cmds[k]];
-   if(!d){gmsg('Perintah ke-'+(k+1)+' tidak dikenal: "'+cmds[k]+'". Pakai atas, bawah, kiri, atau kanan.','er');return}
+   if(!d){fail('Perintah ke-'+(k+1)+' tidak dikenal: "'+cmds[k]+'". Pakai atas, bawah, kiri, atau kanan.','er');return}
    const x=G.pos[0]+d[0],y=G.pos[1]+d[1];
-   if(x<0||y<0||x>=G.n||y>=G.n){gmsg('Robot menabrak tepi papan pada perintah ke-'+(k+1)+'.','er');return}
-   if(G.walls.has(x+','+y)){gmsg('Robot menabrak tembok pada perintah ke-'+(k+1)+'.','er');return}
+   if(x<0||y<0||x>=G.n||y>=G.n){fail('Robot menabrak tepi papan pada perintah ke-'+(k+1)+'.','er');return}
+   if(G.walls.has(x+','+y)){fail('Robot menabrak tembok pada perintah ke-'+(k+1)+'.','er');return}
    G.pos=[x,y];G.moves++;drawBoard();
    if(x===G.go[0]&&y===G.go[1]){wins++;try{localStorage.setItem(WK,String(wins))}catch(e){}drawBoard();gmsg('Menang! Robot sampai di bendera dengan '+G.moves+' perintah (terpendek: '+G.len+'). Tekan Game baru untuk tantangan lain.','ok');return}
    await sleep(200);if(my!==gRun)return;
   }
-  gmsg(r.err?'Error Python: '+r.err:'Kode selesai, tetapi robot belum sampai di bendera. Coba lagi.','er');
+  fail(r.err?'Error Python: '+r.err:'Kode selesai, tetapi robot belum sampai di bendera. Coba lagi.','er');
  }
  ta.addEventListener('keydown',e=>{
   if(e.key==='Tab'){e.preventDefault();ta.setRangeText('    ',ta.selectionStart,ta.selectionEnd,'end');ta.dispatchEvent(new Event('input'))}
   else if(e.key==='Enter'&&(e.ctrlKey||e.metaKey||e.shiftKey)){e.preventDefault();play()}
   else if(e.key==='Enter'&&ta.selectionStart===ta.selectionEnd){e.preventDefault();const v=ta.value,s=ta.selectionStart,ln=v.slice(v.lastIndexOf('\n',s-1)+1,s);ta.setRangeText('\n'+ln.match(/^ */)[0]+(ln.trimEnd().endsWith(':')?'    ':''),s,s,'end');ta.dispatchEvent(new Event('input'))}});
- const GS=[['atas','print("atas")'],['bawah','print("bawah")'],['kiri','print("kiri")'],['kanan','print("kanan")'],['ulangi 3x','for i in range(3):\n    |']];
- $('#gch').innerHTML=GS.map((g,k)=>`<button class="chip" data-k="${k}">${g[0]}</button>`).join('');
- $('#gch').onmousedown=e=>{if(e.target.closest('.chip'))e.preventDefault()};
- $('#gch').onclick=e=>{const b=e.target.closest('.chip');if(!b)return;let t=GS[b.dataset.k][1];const v=ta.value,s=ta.selectionStart;if(v.slice(v.lastIndexOf('\n',s-1)+1,s).trim())t='\n'+t;insSnip(ta,t)};
  $('#grun').onclick=play;$('#greset').onclick=resetPos;
  $('#gnew').onclick=()=>{gRun++;newGame();drawBoard();gmsg('')};
  drawBoard();window.scrollTo(0,0);
@@ -653,7 +659,13 @@ function route(){
 }
 window.addEventListener('hashchange',route);
 $('#reset').onclick=async()=>{if(await modal('Ulangi dari awal','Hapus semua progres dan mulai dari awal?')){done=[];save();location.hash='#/';route();toast('Progres direset.')}};
-$('#theme').onclick=()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;r.dataset.theme=dark?'light':'dark'};
+const isDark=()=>{const r=document.documentElement;return r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches};
+const ICO=p=>'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+p+'</svg>';
+const SUN=ICO('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),MOON=ICO('<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>');
+const paintTheme=()=>{const d=isDark(),b=$('#theme');b.innerHTML=d?SUN:MOON;b.setAttribute('aria-label',d?'Ganti ke tema terang':'Ganti ke tema gelap')};
+$('#theme').onclick=()=>{document.documentElement.dataset.theme=isDark()?'light':'dark';paintTheme()};
+paintTheme();
+try{matchMedia('(prefers-color-scheme:dark)').addEventListener('change',paintTheme)}catch(e){}
 $('#logout').onclick=()=>{authed=false;try{localStorage.removeItem(AK)}catch(e){}gate()};
 checkLive();route();
 </script>
